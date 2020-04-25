@@ -5,14 +5,15 @@
 ## Makefile for the project
 ##
 
-MAIN_FILE		=	./src/Main.cpp
+MAIN_FILE		=	./src/main.cpp
 NAME			=	plazza
 
-SRC				=	./src/
+SRC				=	./src/Kitchen/Kitchen.cpp\
+					./src/Kitchen/Cook.cpp\
 
 INCLUDE			=	./src/
 
-CXXFLAGS		=	-Wall -Wextra -I $(INCLUDE)
+CXXFLAGS		=	-Wall -Wextra -I $(INCLUDE) -pthread
 
 OBJ				=	$(SRC:.cpp=.o)
 OBJ_MAIN		=	$(MAIN_FILE:.cpp=.o)
