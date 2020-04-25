@@ -21,11 +21,10 @@ namespace Pizza {
         Steak,
         Eggplant,
         Goat_Cheese,
-        Chief_Love,
+        Chief_Love, // ps je crois qu'on se fait troll mais bon j'ai laissé
     };
 
     enum PizzaSize {
-        NONE,
         S = 1,
         M = 2,
         L = 4,
