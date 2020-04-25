@@ -9,6 +9,6 @@
 
 int main(const int ac, const char **av)
 {
-    Kitchen test(2,5,5);
+    Kitchen test(10,5,5);
     return (0);
 }

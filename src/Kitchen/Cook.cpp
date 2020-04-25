@@ -12,7 +12,7 @@ void work(void *_mut, void *_stock) {
     auto stock = static_cast<int*>(_stock);
     mut->lock();
     bool ret = true;
-    if (*stock - 5 > 0) {
+    if (stock - 5 > 0) {
         stock -= 5;
     } else
         ret = false;
@@ -24,7 +24,7 @@ Cook::Cook(void *mut, void *stock)
 {
     _mut = mut;
     _stock = stock;
-
+    
     while (0) {
         std::thread th(work, _mut, _stock);
     }

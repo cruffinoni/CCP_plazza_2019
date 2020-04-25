@@ -29,12 +29,12 @@ Kitchen::Kitchen(unsigned short nb, float timer, unsigned int refresh) :
     //     it.join();
 
     // std::cout << a << std::endl;
-    int stock = 86;
+    int stock = 40;
     for (int i = 0; i < nb; ++i)
         _cooksList.emplace_back(new Cook(&_mut, &stock));
     for (auto &it :_cooksList) {
         it->checkWork();
-        
+
     }
 
 }
