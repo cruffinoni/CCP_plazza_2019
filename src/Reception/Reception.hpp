@@ -10,7 +10,7 @@
 
 #include <list>
 #include <cstdint>
-#include "IPC/IPC.hpp"
+#include "Plazza/IPC.hpp"
 
 namespace Kitchen {
     class Kitchen;
@@ -29,7 +29,7 @@ namespace Reception {
             uint16_t _cooks;
             float _multiplicator;
             uint16_t _refreshStock;
-            std::list<IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
+            std::list<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };
 

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include "Kitchen.hpp"
+#include "Pizza/Pizza.hpp"
 
 void *starter(void *a, void *b)
 {
@@ -20,16 +21,18 @@ void *starter(void *a, void *b)
     return (nullptr);
 }
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
     this->_timer = std::chrono::system_clock::now();
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
-            std::make_shared<Cook>(IPC::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
-
+            std::make_shared<Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
+        if (i == 1)
+            lastCook->giveWork(Pizza::PizzaType::Americana);
     }
-    printf("Size of the list: %llu\n", this->_cooksList.size());
+    printf("Size of the list: %zu\n", this->_cooksList.size());
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
@@ -87,5 +90,5 @@ void Kitchen::Stock::withdrawStock(std::list<Pizza::Ingredients> &list) {
 
 Kitchen::Stock::~Stock() {
     for (auto &i: this->_food)
-        printf("Food: %i = %i\n", i.first, i.second);
+        printf("Food: %i = %lu\n", i.first, i.second);
 }

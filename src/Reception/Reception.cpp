@@ -15,7 +15,7 @@ namespace Reception
     {}
 
     void Reception::addKitchen() {
-        IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
+        Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
         auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
         ipc.setDescendant(kitchen);
         _kitchenList.emplace_back(ipc);

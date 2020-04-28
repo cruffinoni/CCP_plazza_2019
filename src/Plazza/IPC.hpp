@@ -12,7 +12,7 @@
 #include <memory>
 #include <iostream>
 
-namespace IPC {
+namespace Plazza {
     template <class A, class D>
     class IPC {
         public:
@@ -40,6 +40,6 @@ namespace IPC {
             A _ascendant;
             D _descendant;
     };
-} // namespace IPC
+}
 
 #endif /* !IPC_HPP_ */

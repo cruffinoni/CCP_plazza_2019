@@ -14,7 +14,8 @@
 #include <memory>
 #include <cstddef>
 #include <chrono>
-#include "IPC/IPC.hpp"
+#include "Plazza/IPC.hpp"
+#include "Plazza/Mutex.hpp"
 #include "Kitchen/Cook.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
@@ -37,7 +38,7 @@ namespace Kitchen {
 
     class Kitchen {
         public:
-            Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc);
+            Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc);
             ~Kitchen();
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
@@ -45,9 +46,9 @@ namespace Kitchen {
             void withdrawStock(std::list<Pizza::Ingredients> &list);
 
         private:
-            const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
-            std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
-            std::mutex _mutex; // TODO: Encapsuler la classe
+            const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
+            std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
+            Plazza::Mutex _mutex;
             Stock _stock;
             std::chrono::time_point<std::chrono::system_clock> _timer;
     };

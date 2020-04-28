@@ -37,6 +37,7 @@ namespace Pizza {
     };
 
     enum PizzaType {
+        None = 0,
         Regina = 1,
         Margarita = 2,
         Americana = 4,
@@ -45,7 +46,7 @@ namespace Pizza {
 
     typedef std::map<PizzaType, std::pair<std::list<Ingredients>, int>> data_t;
 
-    static data_t pizzaList = {
+    static data_t PizzaList = {
         {Regina, {{Doe, Tomato, Gruyere}, 1}},
         {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},
         {Americana, {{Doe, Tomato, Gruyere, Steak}, 2}},

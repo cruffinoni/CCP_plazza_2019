@@ -10,7 +10,7 @@
 namespace Pizza
 {
     Pizza::Pizza(PizzaType type, PizzaSize size) :
-        _type(type), _size(size), _ingredients(pizzaList[type].first), _multi(pizzaList[type].second), _status(WAITING)
+        _type(type), _size(size), _ingredients(PizzaList[type].first), _multi(PizzaList[type].second), _status(WAITING)
     {
     }
 
