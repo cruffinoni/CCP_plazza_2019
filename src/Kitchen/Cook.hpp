@@ -10,23 +10,26 @@
 
 #include <thread>
 #include <mutex>
-#include <iostream>
+#include "IPC/IPC.hpp"
 
+namespace Kitchen {
+    class Kitchen;
+}
 
 class Cook {
     public:
-        Cook(void *mut, void *stock);
-        Cook() = default;
-        ~Cook();
+        enum State_e {
+            PENDING,
+            WORKING,
+        };
+        Cook(const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &&ipc);
+        ~Cook() = default;
 
-        bool checkWork();
-
-
-    protected:
+        //bool checkWork();
     private:
-        void *_mut;
-        void *_stock;
-
+        std::chrono::time_point<std::chrono::system_clock> _timer;
+        const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> _IPC;
+        State_e _state;
 };
 
 #endif /* !COOK_HPP_ */

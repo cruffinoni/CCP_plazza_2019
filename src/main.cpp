@@ -16,6 +16,12 @@ int main(const int ac, const char **av)
     //ipc.getDescendant()->_cookingTime;
 
     //Pizza::PMargarita marga(Pizza::PizzaSize::XXL);
+    //Cook parent;
+    // std::list<IPC::IPC<Reception, std::shared_ptr<Kitchen::Kitchen>>>
+    // std::list<IPC::IPC<Kitchen::Kitchen, std::shared_ptr<Cook>>>
+    //IPC::IPC<Cook, std::shared_ptr<Kitchen::Kitchen>> ipc(parent);
+    //Kitchen::Kitchen kitchen(4, ipc);
+    //ipc.setDescendant(kitchen);
     return (0);
 }
 

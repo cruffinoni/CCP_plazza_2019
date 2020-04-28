@@ -20,10 +20,15 @@ void *starter(void *a, void *b)
     return (nullptr);
 }
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &IPC) :  _IPC(IPC) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &ipc) : _IPC(ipc) {
     this->_timer = std::chrono::system_clock::now();
-    for (uint16_t i = 0; i < cooks; ++i)
-        this->_cooksList.emplace_back(this, std::make_shared<Cook>());
+    for (uint16_t i = 0; i < cooks; ++i) {
+        this->_cooksList.emplace_back(this, std::make_shared<Cook>(
+            IPC::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
+
+        auto &lastCook = this->_cooksList.back();
+        lastCook.setDescendant(lastCook.getDescendant());
+    }
     printf("Size of the list: %llu\n", this->_cooksList.size());
     // unsigned long long a = 0;
     // for (int i = 0; i < 50; ++i)

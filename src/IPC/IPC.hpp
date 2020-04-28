@@ -16,13 +16,25 @@ namespace IPC {
     template <class A, class D>
     class IPC {
         public:
-            IPC(A parent, D child);
+            explicit IPC(A parent) : _ascendant(parent) {}
+            IPC(A parent, D child) : _ascendant(parent), _descendant(child) {}
             ~IPC() = default;
 
-            A getAscendant() const;
-            D getDescendant() const;
+            A getAscendant() {
+                return (this->_ascendant);
+            }
 
-            D operator->();
+            D &getDescendant() {
+                return (this->_descendant);
+            }
+
+            void setDescendant(D &a)  {
+                this->_descendant = a;
+            }
+
+            D operator->()  {
+                return (this->getDescendant());
+            }
 
         private:
             A _ascendant;

@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <chrono>
 #include "IPC/IPC.hpp"
-#include "Cook.hpp"
+#include "Kitchen/Cook.hpp"
 #include "Pizza/Pizza.hpp"
 
 namespace Kitchen {
@@ -35,7 +35,7 @@ namespace Kitchen {
 
     class Kitchen {
         public:
-            Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &IPC);
+            Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &ipc);
             ~Kitchen() = default;
 
         private:
