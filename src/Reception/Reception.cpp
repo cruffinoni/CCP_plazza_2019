@@ -17,8 +17,10 @@ namespace Reception
     Reception::~Reception(){}
 
     void Reception::addKitchen() {
-        const IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
-        Kitchen::Kitchen kitchen(this->_cooks, ipc);
+        IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
+        auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
+        ipc.setDescendant(kitchen);
+        _kitchenList.emplace_back(ipc);
     }
 }
 
