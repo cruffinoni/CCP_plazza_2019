@@ -39,6 +39,8 @@ namespace Kitchen {
             Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc);
             ~Kitchen() = default;
 
+            std::chrono::time_point<std::chrono::system_clock> getTime() const;
+
         private:
             const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
             std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;

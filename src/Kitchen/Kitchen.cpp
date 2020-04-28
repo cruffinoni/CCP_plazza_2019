@@ -45,6 +45,8 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *,
     //}
 }
 
+std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
+
 Kitchen::Stock::Stock() {
     for (int i = Pizza::Ingredients::Ingredient_None; i != Pizza::Invalid; ++i)
         this->_food[static_cast<Pizza::Ingredients>(i)] = DEFAULT_INGREDIENT_QUANTITY;

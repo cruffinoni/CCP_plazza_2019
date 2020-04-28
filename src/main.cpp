@@ -30,6 +30,9 @@ int main(const int ac, const char **av)
     Reception::Reception recp(3, 4, 5);
     for (int i = 0; i < 3; ++i)
         recp.addKitchen();
+    while(1) {
+        recp.closeKitchen();
+    }
     return (0);
 }
 

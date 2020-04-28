@@ -23,6 +23,7 @@ namespace Reception {
             ~Reception();
 
             void addKitchen();
+            void closeKitchen();
 
         protected:
         private:
@@ -30,6 +31,7 @@ namespace Reception {
             float _multiplicator;
             uint16_t _refreshStock;
             std::list<IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
+            static const int DEFAULT_KITCHEN_TIMEOUT = 5;
 
     };
 

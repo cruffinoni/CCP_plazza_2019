@@ -22,6 +22,19 @@ namespace Reception
         ipc.setDescendant(kitchen);
         _kitchenList.emplace_back(ipc);
     }
+
+    void Reception::closeKitchen() {
+        std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
+
+        for (auto it = _kitchenList.begin(); it != _kitchenList.end();) {
+            auto delta = (time - it->getDescendant()->getTime());
+            if (std::chrono::duration_cast<std::chrono::seconds>(delta).count() > DEFAULT_KITCHEN_TIMEOUT) {
+                std::cout << "close Kitchen" << std::endl;
+                it = _kitchenList.erase(it);
+            } else
+                ++it;
+        }
+    }
 }
 
 
