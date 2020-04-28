@@ -9,6 +9,7 @@
 #define APIZZA_HPP_
 
 #include <map>
+#include <list>
 
 namespace Pizza {
 
@@ -21,7 +22,7 @@ namespace Pizza {
         Steak,
         Eggplant,
         Goat_Cheese,
-        Chief_Love, // ps je crois qu'on se fait troll mais bon j'ai laissé
+        Chief_Love,
     };
 
     enum PizzaSize {
@@ -39,33 +40,13 @@ namespace Pizza {
         Fantasia = 8
     };
 
-    static std::map<Ingredients, int> _regina = {
-        {Doe, 1},
-        {Tomato, 1},
-        {Gruyere, 1}
-    };
+    typedef std::map<PizzaType, std::pair <std::list<Ingredients>, int>> Data_t;
 
-    static std::map<Ingredients, int> _margarita = {
-        {Doe, 1},
-        {Tomato, 1},
-        {Gruyere, 1},
-        {Ham, 1},
-        {Mushrooms, 1}
-    };
-
-    static std::map<Ingredients, int> _americana = {
-        {Doe, 1},
-        {Tomato, 1},
-        {Gruyere, 1},
-        {Steak, 1}
-    };
-
-    static std::map<Ingredients, int> _fantasia = {
-        {Doe, 1},
-        {Tomato, 1},
-        {Eggplant, 1},
-        {Goat_Cheese, 1},
-        {Chief_Love, 1}
+    static Data_t pizzaList = {
+        {Regina, {{Doe, Tomato, Gruyere}, 1}},
+        {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},
+        {Americana, {{Doe, Tomato, Gruyere, Steak}, 2}},
+        {Fantasia, {{Doe, Tomato, Eggplant, Goat_Cheese, Chief_Love}, 4}}
     };
 
     enum Status {
@@ -74,15 +55,15 @@ namespace Pizza {
         BAKED
     };
 
-    class APizza {
+    class Pizza {
         public:
-            APizza(PizzaType type, PizzaSize size, std::map<Ingredients, int> pizza, int timer);
-            ~APizza();
+            Pizza(PizzaType type, PizzaSize size);
+            ~Pizza();
 
 
             PizzaType getType() const;
             PizzaSize getSize() const;
-            std::map<Ingredients, int> getIngredientsList() const;
+            std::list<Ingredients> getIngredientsList() const;
             Status getStatus() const;
             int getMutiplicator() const;
 
@@ -93,30 +74,10 @@ namespace Pizza {
         private:
             PizzaType _type;
             PizzaSize _size;
-            std::map<Ingredients, int> _pizza;
+            std::list<Ingredients> _ingre;
             int _multi;
             Status _status;
 
-    };
-
-    class PMargarita : public APizza {
-        public:
-            PMargarita(PizzaSize size);
-    };
-
-    class PRegina : public APizza {
-        public:
-            PRegina(PizzaSize size);
-    };
-
-    class PAmericana : public APizza {
-        public:
-            PAmericana(PizzaSize size);
-    };
-
-    class PFantasia : public APizza {
-        public:
-            PFantasia(PizzaSize size);
     };
 
 } // namespace pizza
