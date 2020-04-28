@@ -8,10 +8,15 @@
 #ifndef RECEPTION_HPP_
 #define RECEPTION_HPP_
 
-#include "Kitchen/Kitchen.hpp"
+#include <list>
+#include <cstdint>
+#include "IPC/IPC.hpp"
 
-namespace Reception
-{
+namespace Kitchen {
+    class Kitchen;
+}
+
+namespace Reception {
     class Reception {
         public:
             Reception(uint16_t cooks, float multiplicator, uint16_t refresh);

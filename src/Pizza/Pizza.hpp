@@ -61,8 +61,7 @@ namespace Pizza {
     class Pizza {
         public:
             Pizza(PizzaType type, PizzaSize size);
-            ~Pizza();
-
+            ~Pizza() = default;
 
             PizzaType getType() const;
             PizzaSize getSize() const;
@@ -81,7 +80,6 @@ namespace Pizza {
             Status _status;
 
     };
-
 } // namespace pizza
 
 

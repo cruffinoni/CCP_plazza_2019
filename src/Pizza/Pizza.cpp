@@ -14,8 +14,6 @@ namespace Pizza
     {
     }
 
-    Pizza::~Pizza(){}
-
     PizzaType Pizza::getType() const {return _type;}
     PizzaSize Pizza::getSize() const {return _size;}
     std::list<Ingredients> Pizza::getIngredientsList() const {return _ingredients;}
@@ -24,9 +22,6 @@ namespace Pizza
 
     void Pizza::startCooking() {_status = COOKING;}
     void Pizza::isBaked() {_status = BAKED;}
-
-
-    //###################################################
 
 } // namespace Pizza
 

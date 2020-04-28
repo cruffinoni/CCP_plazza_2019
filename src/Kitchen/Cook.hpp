@@ -25,11 +25,10 @@ class Cook {
         Cook(const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &&ipc);
         ~Cook() = default;
 
-        //bool checkWork();
-    private:
         std::chrono::time_point<std::chrono::system_clock> _timer;
         const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> _IPC;
         State_e _state;
+        std::shared_ptr<std::thread> _thread;
 };
 
 #endif /* !COOK_HPP_ */

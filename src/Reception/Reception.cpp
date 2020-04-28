@@ -6,6 +6,7 @@
 */
 
 #include "Reception.hpp"
+#include "Kitchen/Kitchen.hpp"
 
 namespace Reception
 {
@@ -16,9 +17,9 @@ namespace Reception
     Reception::~Reception(){}
 
     void Reception::addKitchen() {
-        IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
-        Kitchen::Kitchen kitchen(_cooks, ipc);
+        const IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
+        Kitchen::Kitchen kitchen(this->_cooks, ipc);
     }
-} // namespace Reception
+}
 
 
