@@ -23,8 +23,8 @@ void *starter(void *a, void *b)
 Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _IPC(ipc) {
     this->_timer = std::chrono::system_clock::now();
     for (uint16_t i = 0; i < cooks; ++i) {
-        this->_cooksList.emplace_back(this, std::make_shared<Cook>(
-            IPC::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
+        this->_cooksList.emplace_back(this,
+            std::make_shared<Cook>(IPC::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
 
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
@@ -46,6 +46,15 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *,
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
+
+Kitchen::Kitchen::~Kitchen() {
+    //for (auto &i: this->_cooksList)
+    //    i.getDescendant()->
+}
+
+void Kitchen::Kitchen::refreshStock() {
+    this->_stock.refresh();
+}
 
 Kitchen::Stock::Stock() {
     for (int i = Pizza::Ingredients::Ingredient_None; i != Pizza::Invalid; ++i)
@@ -77,4 +86,9 @@ void Kitchen::Stock::withdrawStock(std::list<Pizza::Ingredients> &list) {
         return;
     for (auto &i : list)
         this->_food[i]--;
+}
+
+Kitchen::Stock::~Stock() {
+    for (auto &i: this->_food)
+        printf("Food: %i = %i\n", i.first, i.second);
 }

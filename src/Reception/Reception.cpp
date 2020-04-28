@@ -14,8 +14,6 @@ namespace Reception
     _cooks(cooks), _multiplicator(multiplicator), _refreshStock(refresh)
     {}
 
-    Reception::~Reception(){}
-
     void Reception::addKitchen() {
         IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
         auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);

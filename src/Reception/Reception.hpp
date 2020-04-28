@@ -20,19 +20,17 @@ namespace Reception {
     class Reception {
         public:
             Reception(uint16_t cooks, float multiplicator, uint16_t refresh);
-            ~Reception();
+            ~Reception() = default;
 
             void addKitchen();
             void closeKitchen();
 
-        protected:
         private:
             uint16_t _cooks;
             float _multiplicator;
             uint16_t _refreshStock;
             std::list<IPC::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
-
     };
 
 } // namespace Reception

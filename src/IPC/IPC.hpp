@@ -20,7 +20,7 @@ namespace IPC {
             IPC(A parent, D child) : _ascendant(parent), _descendant(child) {}
             ~IPC() = default;
 
-            A getAscendant() {
+            A &getAscendant() {
                 return (this->_ascendant);
             }
 

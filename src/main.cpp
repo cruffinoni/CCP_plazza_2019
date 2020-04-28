@@ -27,12 +27,12 @@ int main(const int ac, const char **av)
 
 
 
-    Reception::Reception recp(3, 4, 5);
-    for (int i = 0; i < 3; ++i)
+    Reception::Reception recp(2, 4, 5);
+    for (int i = 0; i < 1; ++i) {
         recp.addKitchen();
-    while(1) {
         recp.closeKitchen();
     }
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     return (0);
 }
 

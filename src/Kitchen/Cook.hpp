@@ -21,12 +21,13 @@ class Cook {
         enum State_e {
             PENDING,
             WORKING,
+            LEAVING,
         };
         Cook(const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &&ipc);
-        ~Cook() = default;
+        ~Cook();
 
         std::chrono::time_point<std::chrono::system_clock> _timer;
-        const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> _IPC;
+        IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> _IPC;
         State_e _state;
         std::shared_ptr<std::thread> _thread;
 };

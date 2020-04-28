@@ -5,47 +5,29 @@
 ** Cook
 */
 
-#include "Cook.hpp"
-
-//void work(void *_mut, void *_stock) {
-//    auto mut = static_cast<std::mutex*>(_mut);
-//    auto stock = static_cast<int*>(_stock);
-//    mut->lock();
-//    bool ret = true;
-//    if (stock - 5 > 0) {
-//        stock -= 5;
-//    } else
-//        ret = false;
-//    std::cout << "Cook " << (ret ? "worked" : "stock to low") << std::endl;
-//    mut->unlock();
-//}
+#include "Kitchen/Cook.hpp"
+#include "Kitchen/Kitchen.hpp"
 
 void work(Cook *work) {
-    printf("Inside a thread: %p\n", &work->_thread);
+    printf("(%p) Inside a thread\n", &work->_thread);
     do {
         std::this_thread::yield();
-        std::this_thread::sleep_for(std::chrono::seconds(4));
-        //printf("Slept for 4sec\n");
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        printf("(%p) Slept for 5sec\n", &work->_thread);
+        work->_IPC.getAscendant()->refreshStock();
     } while (work->_state == Cook::PENDING);
 }
 
 Cook::Cook(const IPC::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &&ipc) : _IPC(ipc) {
     this->_state = PENDING;
-    //printf("Test: %p\n", &this->_thread);
+    printf("Test: %p\n", &this->_thread);
     this->_timer = std::chrono::system_clock::now();
-    //this->_thread = std::make_shared<std::thread>(work, this);
+    this->_thread = std::make_shared<std::thread>(work, this);
 }
 
-//bool Cook::checkWork() {
-//    auto mut = static_cast<std::mutex*>(_mut);
-//    auto stock = static_cast<int*>(_stock);
-//    mut->lock();
-//    bool ret = true;
-//    if (*stock - 5 > 0) {
-//        stock -= 5;
-//    } else
-//        ret = false;
-//    std::cout << "Cook " << (ret ? "worked" : "stock to low") << std::endl;
-//    mut->unlock();
-//    return ret;
-//}
+Cook::~Cook() {
+    this->_state = LEAVING;
+    if (this->_thread->joinable()) {
+        this->_thread->join();
+    }
+}

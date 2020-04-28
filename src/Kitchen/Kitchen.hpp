@@ -28,6 +28,7 @@ namespace Kitchen {
 
             bool operator==(std::list<Pizza::Ingredients> &list);
             bool operator!=(std::list<Pizza::Ingredients> &list);
+            ~Stock();
 
         private:
             std::map<Pizza::Ingredients, size_t> _food;
@@ -37,14 +38,18 @@ namespace Kitchen {
     class Kitchen {
         public:
             Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc);
-            ~Kitchen() = default;
+            ~Kitchen();
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
+            void refreshStock();
+            Stock getStock() const {
+                return (this->_stock);
+            }
 
         private:
             const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
             std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
-            std::mutex _mut; // TODO: Encapsuler la classe
+            std::mutex _mutex; // TODO: Encapsuler la classe
             Stock _stock;
             std::chrono::time_point<std::chrono::system_clock> _timer;
     };
