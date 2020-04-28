@@ -20,7 +20,7 @@ void *starter(void *a, void *b)
     return (nullptr);
 }
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &ipc) : _IPC(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception, std::shared_ptr<Kitchen>> &ipc) : _IPC(ipc) {
     this->_timer = std::chrono::system_clock::now();
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this, std::make_shared<Cook>(

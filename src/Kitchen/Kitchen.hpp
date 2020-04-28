@@ -18,6 +18,10 @@
 #include "Kitchen/Cook.hpp"
 #include "Pizza/Pizza.hpp"
 
+namespace Reception {
+    class Reception{};
+};
+
 namespace Kitchen {
     class Stock {
         public:
@@ -35,11 +39,11 @@ namespace Kitchen {
 
     class Kitchen {
         public:
-            Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &ipc);
+            Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception, std::shared_ptr<Kitchen>> &ipc);
             ~Kitchen() = default;
 
         private:
-            const IPC::IPC<Cook, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
+            const IPC::IPC<Reception::Reception, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
             std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
             std::mutex _mut; // TODO: Encapsuler la classe
             Stock _stock;
