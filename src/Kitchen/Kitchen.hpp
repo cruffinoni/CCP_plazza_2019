@@ -42,12 +42,10 @@ namespace Kitchen {
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
             void refreshStock();
-            Stock getStock() const {
-                return (this->_stock);
-            }
+            void withdrawStock(std::list<Pizza::Ingredients> &list);
 
         private:
-            const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
+            const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
             std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
             std::mutex _mutex; // TODO: Encapsuler la classe
             Stock _stock;

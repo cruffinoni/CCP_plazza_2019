@@ -20,7 +20,7 @@ void *starter(void *a, void *b)
     return (nullptr);
 }
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _IPC(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
     this->_timer = std::chrono::system_clock::now();
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
@@ -30,19 +30,6 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const IPC::IPC<Reception::Reception *,
         lastCook.setDescendant(lastCook.getDescendant());
     }
     printf("Size of the list: %llu\n", this->_cooksList.size());
-    // unsigned long long a = 0;
-    // for (int i = 0; i < 50; ++i)
-    //     _cooksList.emplace_back(std::thread(starter, &a, &_mut));
-    // for (auto &it : _cooksList)
-    //     it.join();
-
-    // std::cout << a << std::endl;
-    //int stock = 40;
-    //for (int i = 0; i < nb; ++i)
-    //    _cooksList.emplace_back(new Cook(&_mut, &stock));
-    //for (auto &it :_cooksList) {
-        //it->checkWork();
-    //}
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
@@ -53,7 +40,17 @@ Kitchen::Kitchen::~Kitchen() {
 }
 
 void Kitchen::Kitchen::refreshStock() {
+    if (!this->_mutex.try_lock())
+        return;
     this->_stock.refresh();
+    this->_mutex.unlock();
+}
+
+void Kitchen::Kitchen::withdrawStock(std::list<Pizza::Ingredients> &list) {
+    if (!this->_mutex.try_lock())
+        return;
+    this->_stock.withdrawStock(list);
+    this->_mutex.unlock();
 }
 
 Kitchen::Stock::Stock() {
