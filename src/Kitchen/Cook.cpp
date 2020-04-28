@@ -25,7 +25,7 @@ Cook::Cook(void *mut, void *stock)
     _mut = mut;
     _stock = stock;
     
-    while (0) {
+    while (1) {
         std::thread th(work, _mut, _stock);
     }
 }

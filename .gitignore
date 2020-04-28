@@ -1,5 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
-### C template
+### D template
 # Prerequisites
 *.d
 
@@ -53,7 +53,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-### C++ template
+### D++ template
 # Prerequisites
 *.d
 

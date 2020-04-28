@@ -12,8 +12,9 @@
 #include <list>
 
 namespace Pizza {
-
     enum Ingredients {
+        Ingredient_None,
+
         Doe,
         Tomato,
         Gruyere,
@@ -23,6 +24,8 @@ namespace Pizza {
         Eggplant,
         Goat_Cheese,
         Chief_Love,
+
+        Invalid
     };
 
     enum PizzaSize {
@@ -40,9 +43,9 @@ namespace Pizza {
         Fantasia = 8
     };
 
-    typedef std::map<PizzaType, std::pair <std::list<Ingredients>, int>> Data_t;
+    typedef std::map<PizzaType, std::pair<std::list<Ingredients>, int>> data_t;
 
-    static Data_t pizzaList = {
+    static data_t pizzaList = {
         {Regina, {{Doe, Tomato, Gruyere}, 1}},
         {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},
         {Americana, {{Doe, Tomato, Gruyere, Steak}, 2}},
@@ -70,11 +73,10 @@ namespace Pizza {
             void startCooking();
             void isBaked();
 
-        protected:
         private:
             PizzaType _type;
             PizzaSize _size;
-            std::list<Ingredients> _ingre;
+            std::list<Ingredients> _ingredients;
             int _multi;
             Status _status;
 

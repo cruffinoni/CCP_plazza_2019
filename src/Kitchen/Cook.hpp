@@ -16,6 +16,7 @@
 class Cook {
     public:
         Cook(void *mut, void *stock);
+        Cook() = default;
         ~Cook();
 
         bool checkWork();

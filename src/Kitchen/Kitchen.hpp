@@ -11,23 +11,41 @@
 #include <list>
 #include <thread>
 #include <mutex>
-#include <iostream>
 #include <memory>
+#include <cstddef>
+#include <chrono>
+#include "IPC/IPC.hpp"
 #include "Cook.hpp"
+#include "Pizza/Pizza.hpp"
 
-class Kitchen {
-    public:
-        Kitchen(unsigned short cooks, float timer, unsigned int refresh);
-        ~Kitchen();
+namespace Kitchen {
+    class Stock {
+        public:
+            Stock();
+            void refresh();
+            void withdrawStock(std::list<Pizza::Ingredients> &list);
 
-    protected:
-    private:
-        float _cookingTime;
-        unsigned int _stockRefresh;
-        std::list<std::shared_ptr<Cook>> _cooksList;
-        std::mutex _mut;
+            bool operator==(std::list<Pizza::Ingredients> &list);
+            bool operator!=(std::list<Pizza::Ingredients> &list);
 
+        private:
+            std::map<Pizza::Ingredients, size_t> _food;
+            static const size_t DEFAULT_INGREDIENT_QUANTITY = 5;
+    };
 
-};
+    class Kitchen {
+        public:
+            Kitchen(uint16_t cooks, const IPC::IPC<Cook, std::shared_ptr<Kitchen>> &IPC);
+            ~Kitchen() = default;
+
+        private:
+            const IPC::IPC<Cook, std::shared_ptr<Kitchen>> _IPC; // TODO: Remplacer Cook par Reception
+            std::list<IPC::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
+            std::mutex _mut; // TODO: Encapsuler la classe
+            Stock _stock;
+            std::chrono::time_point<std::chrono::system_clock> _timer;
+    };
+
+}
 
 #endif /* !KITCHEN_HPP_ */
