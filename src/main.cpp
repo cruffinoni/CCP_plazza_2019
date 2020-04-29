@@ -26,12 +26,12 @@ int main(const int ac, const char **av)
     //ipc.setDescendant(kitchen);
 
 
-    Reception::Reception recp(2, 4, 5);
+    Reception::Reception recp(3, 4, 5);
     for (int i = 0; i < 1; ++i) {
         recp.addKitchen();
         recp.closeKitchen();
     }
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     return (0);
 }
 

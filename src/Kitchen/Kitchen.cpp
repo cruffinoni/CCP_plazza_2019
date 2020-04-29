@@ -7,9 +7,9 @@
 
 #include "Kitchen.hpp"
 #include "Pizza/Pizza.hpp"
+#include "Kitchen/Cook.hpp"
 
 Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
-    this->_timer = std::chrono::system_clock::now();
     this->_sizeList = 2 * cooks;
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
@@ -23,21 +23,44 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception
     printf("Size of the list: %zu\n", this->_cooksList.size());
 }
 
+void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
+    if (this->_orders.empty())
+        return;
+    for (auto &pizza : this->_orders) {
+        if (pizza->status == Pizza::WAITING) {
+            this->_mutex.try_lock();
+            pizza->status = Pizza::COOKING;
+            try {
+                worker->giveWork(pizza);
+            } catch (const Cook::Exceptions::WorkerBusy &e) {
+                std::cerr << e.what() << std::endl;
+            }
+            this->_mutex.unlock();
+            return;
+        }
+    }
+}
+
 void Kitchen::Kitchen::run() {
     uint16_t counter;
 
+    this->_timer = std::chrono::system_clock::now();
     do {
         counter = 0;
-        for (auto it :_cooksList)
-            if (it->getCookState() == Cook::Cook::State::WORKING)
+        for (auto ipc : _cooksList) {
+            if (ipc->getCookState() == Cook::Cook::State::WORKING)
                 counter++;
+            else
+                this->checkForWork(ipc.getDescendant());
+        }
         if (counter > 0)
             _timer = std::chrono::system_clock::now();
-    } while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _timer).count() < 5);
+    } while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - _timer).count() < 5000);
+    printf("Nobody's working since 5 sec\n");
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {
-    return _timer;
+    return (_timer);
 }
 
 void Kitchen::Kitchen::refreshStock() {
@@ -52,6 +75,21 @@ void Kitchen::Kitchen::withdrawStock(std::list<Pizza::Ingredients> &list) {
         return;
     this->_stock.withdrawStock(list);
     this->_mutex.unlock();
+}
+
+void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza, Pizza::Status status) {
+    if (!this->_mutex.try_lock())
+        return;
+    pizza->status = status;
+    this->_mutex.unlock();
+}
+
+size_t Kitchen::Kitchen::getAvailableSpace() {
+    return (this->_sizeList - this->_orders.size());
+}
+
+void Kitchen::Kitchen::addCommand(std::shared_ptr<Pizza::pizza_t> &order) {
+    this->_orders.emplace_back(order);
 }
 
 Kitchen::Stock::Stock() {

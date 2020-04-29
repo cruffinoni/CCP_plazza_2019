@@ -43,18 +43,22 @@ namespace Kitchen {
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
             void refreshStock();
+            void changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza, Pizza::Status status);
             void withdrawStock(std::list<Pizza::Ingredients> &list);
 
             void run();
+            size_t getAvailableSpace();
+            void addCommand(std::shared_ptr<Pizza::pizza_t> &order);
 
         private:
+            void checkForWork(std::shared_ptr<Cook::Cook> &worker);
             const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
             std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>> _cooksList;
             Plazza::Mutex _mutex;
             Stock _stock;
             uint16_t _sizeList;
             std::chrono::time_point<std::chrono::system_clock> _timer;
-            std::list<Pizza::pizza_t> _orders;
+            std::list<std::shared_ptr<Pizza::pizza_t>> _orders;
     };
 
 }

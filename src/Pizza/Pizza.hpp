@@ -58,10 +58,13 @@ namespace Pizza {
     };
 
     struct pizza_t {
-        PizzaType pizza;
+        pizza_t(PizzaType type, PizzaSize size) : type(type), size(size), status(WAITING) {}
+        PizzaType type;
         PizzaSize size;
         Status status;
-        bool operator==(pizza_t piz) {return this->pizza == piz.pizza && this->size == piz.size;}
+        bool operator==(const pizza_t &a) const {
+            return (this->type == a.type && this->size == a.size);
+        }
     };
 
 }

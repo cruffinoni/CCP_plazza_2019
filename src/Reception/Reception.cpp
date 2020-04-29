@@ -10,8 +10,8 @@
 
 namespace Reception
 {
-    Reception::Reception(uint16_t cooks, float multiplicator, uint16_t refresh) :
-    _cooks(cooks), _multiplicator(multiplicator), _refreshStock(refresh)
+    Reception::Reception(uint16_t cooks, float multiplier, uint16_t refresh) :
+        _cooks(cooks), _multiplier(multiplier), _refreshStock(refresh)
     {}
 
     void Reception::addKitchen() {
@@ -19,6 +19,7 @@ namespace Reception
         auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
         ipc.setDescendant(kitchen);
         _kitchenList.emplace_back(ipc);
+        this->addOrder(Pizza::pizza_t(Pizza::Americana, Pizza::S), 2);
     }
 
     void Reception::closeKitchen() {
@@ -33,31 +34,36 @@ namespace Reception
                 ++it;
         }
     }
+    /*
+     * TODO: Faire une fonction de remove dans la reception appelé par la kitchen et
+     * check si la commande est complétée ainsi, la remove si c'est le cas
+     */
 
-    void Reception::addOrder(Pizza::pizza_t pizza, uint16_t nb) {
-        std::list<Pizza::pizza_t> list;
+    void Reception::addOrder(Pizza::pizza_t &pizza, uint16_t nb) {
+        std::list<std::shared_ptr<Pizza::pizza_t>> list;
         for (uint16_t i = 0; i < nb; ++i)
-            list.push_back(pizza);
+            list.push_back(std::make_shared<Pizza::pizza_t>(pizza));
         _orders.push_back(list);
     }
 
-    void Reception::updateOrders(Pizza::pizza_t pizza) {
-        for (auto it : _orders) {
-            for (auto i : it) {
-                if (pizza == i && i.status != Pizza::Status::BAKED) {
-                    i.status = Pizza::Status::BAKED;
-                    return;
-                }
-            }
+    void Reception::addOrder(Pizza::pizza_t &&pizza, uint16_t nb) {
+        std::list<std::shared_ptr<Pizza::pizza_t>> list;
+        for (uint16_t i = 0; i < nb; ++i)
+            list.push_back(std::make_shared<Pizza::pizza_t>(pizza));
+        _orders.push_back(list);
+        // TODO: Move dans une fonction l'algo de dispatch & le faire pizza/pizza
+        for (auto &kitchen : this->_kitchenList) {
+            printf("Space available: %zu\n", kitchen->getAvailableSpace());
         }
     }
 
     void Reception::outputOrders() {
         uint16_t counter;
-        for (auto it = _orders.begin(); it != _orders.end();) {
+
+        for (auto order = _orders.begin(); order != _orders.end();) {
             counter = 0;
-            for (auto i : *it) {
-                if (i.status == Pizza::Status::BAKED)
+            for (auto &pizza : *order) {
+                if (pizza->status == Pizza::Status::BAKED)
                     counter++;
                 else {
                     counter = -1;
@@ -65,10 +71,10 @@ namespace Reception
                 }
             }
             if (counter > 0) {
-                std::cout << "order finish : [pizzatype] = " << it->begin()->pizza << " | [pizzasize] = " << it->begin()->size << " * " << counter << std::endl;
-                it = _orders.erase(it);
+                std::cout << "order finish : [pizzatype] = " << order->begin()->get()->type << " | [pizzasize] = " << order->begin()->get()->size << " * " << counter << std::endl;
+                order = _orders.erase(order);
             } else
-                it++;
+                order++;
         }
     }
 }

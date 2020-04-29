@@ -23,17 +23,15 @@ static void work(Cook::Cook *worker) {
     } while (worker->getCookState() != Cook::Cook::LEAVING);
 }
 
-Cook::Cook::Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc) : _ipc(ipc), _pizza(Pizza::None) {
+Cook::Cook::Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc) : _ipc(ipc) {
     this->_state = PENDING;
     this->_thread = std::make_shared<std::thread>(work, this);
 }
 
 Cook::Cook::~Cook() {
     this->_state = LEAVING;
-    if (this->_thread->joinable()) {
-        //printf("(%p) waiting for the thread to end\n", this);
+    if (this->_thread->joinable())
         this->_thread->join();
-    }
 }
 
 Cook::Cook::State Cook::Cook::getCookState() const {
@@ -53,22 +51,23 @@ Cook::Cook::CookIPC_t &Cook::Cook::getIPC() {
     return (this->_ipc);
 }
 
-void Cook::Cook::giveWork(Pizza::PizzaType &&pizza) {
+void Cook::Cook::giveWork(std::shared_ptr<Pizza::pizza_t> &pizza) {
     if (this->_state != PENDING)
         throw Exceptions::WorkerBusy();
     this->_pizza = pizza;
     this->_state = WORKING;
 }
 
-Pizza::PizzaType Cook::Cook::getCurrentPizza() const {
+std::shared_ptr<Pizza::pizza_t> Cook::Cook::getCurrentPizza() const {
     return (this->_pizza);
 }
 
 void Cook::Cook::cookPizza() {
     if (this->getCookState() == Cook::Cook::WORKING) {
-        this->_ipc.getAscendant()->withdrawStock(Pizza::PizzaList[this->getCurrentPizza()].first);
-        std::this_thread::sleep_for(std::chrono::seconds(Pizza::PizzaList[this->getCurrentPizza()].second));
+        this->_ipc.getAscendant()->withdrawStock(Pizza::PizzaList[this->getCurrentPizza()->type].first);
+        std::this_thread::sleep_for(std::chrono::seconds(Pizza::PizzaList[this->getCurrentPizza()->type].second));
         this->setCookState(Cook::Cook::PENDING);
+        this->_ipc.getAscendant()->changePizzaStatus(this->_pizza, Pizza::Status::BAKED);
     }
 }
 

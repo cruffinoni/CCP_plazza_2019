@@ -34,17 +34,17 @@ namespace Cook {
 
             State getCookState() const;
             void setCookState(State state);
-            Pizza::PizzaType getCurrentPizza() const;
+            std::shared_ptr<Pizza::pizza_t> getCurrentPizza() const;
             std::shared_ptr<std::thread> &getThread();
             CookIPC_t &getIPC();
-            void giveWork(Pizza::PizzaType &&pizza);
+            void giveWork(std::shared_ptr<Pizza::pizza_t> &pizza);
             void cookPizza();
 
         private:
             CookIPC_t _ipc;
             State _state;
             std::shared_ptr<std::thread> _thread;
-            Pizza::PizzaType _pizza;
+            std::shared_ptr<Pizza::pizza_t> _pizza;
     };
 
     namespace Exceptions {
