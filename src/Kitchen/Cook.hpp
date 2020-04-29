@@ -17,33 +17,43 @@ namespace Kitchen {
     class Kitchen;
 }
 
-class Cook {
-    private:
-        typedef Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> CookIPC_t;
+namespace Cook {
+    class Cook {
+        private:
+            typedef Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> CookIPC_t;
 
-    public:
-        explicit Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc);
-        ~Cook();
+        public:
+            explicit Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc);
+            ~Cook();
 
-        enum CookState {
-            PENDING,
-            WORKING,
-            LEAVING,
+            enum State {
+                PENDING,
+                WORKING,
+                LEAVING,
+            };
+
+            State getCookState() const;
+            void setCookState(State state);
+            Pizza::PizzaType getCurrentPizza() const;
+            std::shared_ptr<std::thread> &getThread();
+            CookIPC_t &getIPC();
+            void giveWork(Pizza::PizzaType &&pizza);
+            void cookPizza();
+
+        private:
+            CookIPC_t _ipc;
+            State _state;
+            std::shared_ptr<std::thread> _thread;
+            Pizza::PizzaType _pizza;
+    };
+
+    namespace Exceptions {
+        class WorkerBusy : std::exception {
+            public:
+                WorkerBusy() noexcept = default;
+                const char *what() const noexcept override;
         };
-        CookState getCookState() const;
-        void setCookState(CookState state);
-        Pizza::PizzaType getCurrentPizza() const;
-        std::shared_ptr<std::thread> &getThread();
-        CookIPC_t &getIPC();
-        void giveWork(Pizza::PizzaType &&pizza);
-        void cookPizza();
-
-    private:
-        std::chrono::time_point<std::chrono::system_clock> _timer;
-        CookIPC_t _ipc;
-        CookState _state;
-        std::shared_ptr<std::thread> _thread;
-        Pizza::PizzaType _pizza;
-};
+    }
+}
 
 #endif /* !COOK_HPP_ */

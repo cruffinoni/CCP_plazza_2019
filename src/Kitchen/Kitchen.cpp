@@ -5,38 +5,23 @@
 ** Kitchen
 */
 
-#include <algorithm>
 #include "Kitchen.hpp"
 #include "Pizza/Pizza.hpp"
-
-void *starter(void *a, void *b)
-{
-    auto test = static_cast<std::mutex*>(b);
-    test->lock();
-    auto *_a = static_cast<unsigned long long *>(a);
-    printf("Start: %llu\n", *_a);
-    for (unsigned long long k = (*_a) + 100000; (*_a) < k;)
-        *_a = *_a + 1;
-    test->unlock();
-    return (nullptr);
-}
 
 Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
     this->_timer = std::chrono::system_clock::now();
     this->_sizeList = 2 * cooks;
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
-            std::make_shared<Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
+            std::make_shared<Cook::Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>(this)));
         std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
-        if (i == 1)
-            lastCook->giveWork(Pizza::PizzaType::Americana);
+        //if (i == 1)
+        //    lastCook->giveWork(Pizza::PizzaType::Americana);
     }
     printf("Size of the list: %zu\n", this->_cooksList.size());
 }
-
-std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
 
 void Kitchen::Kitchen::run() {
     uint16_t counter;
@@ -44,16 +29,15 @@ void Kitchen::Kitchen::run() {
     do {
         counter = 0;
         for (auto it :_cooksList)
-            if (it->getCookState() == Cook::CookState::WORKING)
+            if (it->getCookState() == Cook::Cook::State::WORKING)
                 counter++;
         if (counter > 0)
             _timer = std::chrono::system_clock::now();
     } while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _timer).count() < 5);
 }
 
-Kitchen::Kitchen::~Kitchen() {
-    //for (auto &i: this->_cooksList)
-    //    i.getDescendant()->
+std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {
+    return _timer;
 }
 
 void Kitchen::Kitchen::refreshStock() {

@@ -44,44 +44,18 @@ namespace Pizza {
         Fantasia = 8
     };
 
-    typedef std::map<PizzaType, std::pair<std::list<Ingredients>, int>> data_t;
-
-    static data_t PizzaList = {
+    static std::map<PizzaType, std::pair<std::list<Ingredients>, int>> PizzaList = {
         {Regina, {{Doe, Tomato, Gruyere}, 1}},
         {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},
         {Americana, {{Doe, Tomato, Gruyere, Steak}, 2}},
         {Fantasia, {{Doe, Tomato, Eggplant, Goat_Cheese, Chief_Love}, 4}}
     };
 
-    enum Status {
-        WAITING,
-        COOKING,
-        BAKED
+    struct pizza_t {
+        PizzaType pizza;
+        PizzaSize size;
     };
-
-    class Pizza {
-        public:
-            Pizza(PizzaType type, PizzaSize size);
-            ~Pizza() = default;
-
-            PizzaType getType() const;
-            PizzaSize getSize() const;
-            std::list<Ingredients> getIngredientsList() const;
-            Status getStatus() const;
-            int getMutiplicator() const;
-
-            void startCooking();
-            void isBaked();
-
-        private:
-            PizzaType _type;
-            PizzaSize _size;
-            std::list<Ingredients> _ingredients;
-            int _multi;
-            Status _status;
-
-    };
-} // namespace pizza
+}
 
 
 #endif /* !APIZZA_HPP_ */

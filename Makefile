@@ -8,9 +8,8 @@
 MAIN_FILE		=	./src/main.cpp
 NAME			=	plazza
 
-SRC				=	./src/Kitchen/Kitchen.cpp\
-					./src/Kitchen/Cook.cpp\
-					./src/Pizza/Pizza.cpp\
+SRC				=	./src/Kitchen/Kitchen.cpp		\
+					./src/Kitchen/Cook.cpp			\
 					./src/Reception/Reception.cpp
 
 INCLUDE			=	./src/

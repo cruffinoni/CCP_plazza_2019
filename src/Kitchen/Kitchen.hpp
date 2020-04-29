@@ -39,7 +39,7 @@ namespace Kitchen {
     class Kitchen {
         public:
             Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc);
-            ~Kitchen();
+            ~Kitchen() = default ;
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
             void refreshStock();
@@ -49,12 +49,12 @@ namespace Kitchen {
 
         private:
             const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
-            std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
+            std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>> _cooksList;
             Plazza::Mutex _mutex;
             Stock _stock;
             uint16_t _sizeList;
-            std::list<Pizza::Pizza> _pizzaToDo;
             std::chrono::time_point<std::chrono::system_clock> _timer;
+            std::list<Pizza::pizza_t> _orders;
     };
 
 }
