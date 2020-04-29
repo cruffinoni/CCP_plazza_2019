@@ -44,6 +44,12 @@ namespace Pizza {
         Fantasia = 8
     };
 
+    enum Status {
+        WAITING,
+        COOKING,
+        BAKED
+    };
+
     static std::map<PizzaType, std::pair<std::list<Ingredients>, int>> PizzaList = {
         {Regina, {{Doe, Tomato, Gruyere}, 1}},
         {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},
@@ -54,6 +60,7 @@ namespace Pizza {
     struct pizza_t {
         PizzaType pizza;
         PizzaSize size;
+        Status status;
     };
 }
 
