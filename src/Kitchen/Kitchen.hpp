@@ -45,11 +45,15 @@ namespace Kitchen {
             void refreshStock();
             void withdrawStock(std::list<Pizza::Ingredients> &list);
 
+            void run();
+
         private:
             const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
             std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>> _cooksList;
             Plazza::Mutex _mutex;
             Stock _stock;
+            uint16_t _sizeList;
+            std::list<Pizza::Pizza> _pizzaToDo;
             std::chrono::time_point<std::chrono::system_clock> _timer;
     };
 

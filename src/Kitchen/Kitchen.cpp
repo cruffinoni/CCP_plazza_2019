@@ -23,6 +23,7 @@ void *starter(void *a, void *b)
 
 Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
     this->_timer = std::chrono::system_clock::now();
+    this->_sizeList = 2 * cooks;
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
             std::make_shared<Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook>>(this)));
@@ -36,6 +37,19 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {return _timer;}
+
+void Kitchen::Kitchen::run() {
+    uint16_t counter;
+
+    do {
+        counter = 0;
+        for (auto it :_cooksList)
+            if (it->getCookState() == Cook::CookState::WORKING)
+                counter++;
+        if (counter > 0)
+            _timer = std::chrono::system_clock::now();
+    } while (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _timer).count() < 5);
+}
 
 Kitchen::Kitchen::~Kitchen() {
     //for (auto &i: this->_cooksList)
