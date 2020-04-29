@@ -25,11 +25,15 @@ namespace Reception {
             void addKitchen();
             void closeKitchen();
 
+            void addOrder(Pizza::pizza_t, uint16_t nb);
+            void updateOrders(Pizza::pizza_t pizzaList);
+            void outputOrders();
         private:
             uint16_t _cooks;
             float _multiplicator;
             uint16_t _refreshStock;
             std::list<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
+            std::list<std::list<Pizza::pizza_t>> _orders;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };
 

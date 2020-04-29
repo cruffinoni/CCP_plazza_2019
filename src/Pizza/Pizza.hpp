@@ -61,7 +61,9 @@ namespace Pizza {
         PizzaType pizza;
         PizzaSize size;
         Status status;
+        bool operator==(pizza_t piz) {return this->pizza == piz.pizza && this->size == piz.size;}
     };
+
 }
 
 

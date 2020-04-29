@@ -33,6 +33,44 @@ namespace Reception
                 ++it;
         }
     }
+
+    void Reception::addOrder(Pizza::pizza_t pizza, uint16_t nb) {
+        std::list<Pizza::pizza_t> list;
+        for (uint16_t i = 0; i < nb; ++i)
+            list.push_back(pizza);
+        _orders.push_back(list);
+    }
+
+    void Reception::updateOrders(Pizza::pizza_t pizza) {
+        for (auto it : _orders) {
+            for (auto i : it) {
+                if (pizza == i && i.status != Pizza::Status::BAKED) {
+                    i.status = Pizza::Status::BAKED;
+                    return;
+                }
+            }
+        }
+    }
+
+    void Reception::outputOrders() {
+        uint16_t counter;
+        for (auto it = _orders.begin(); it != _orders.end();) {
+            counter = 0;
+            for (auto i : *it) {
+                if (i.status == Pizza::Status::BAKED)
+                    counter++;
+                else {
+                    counter = -1;
+                    break;
+                }
+            }
+            if (counter > 0) {
+                std::cout << "order finish : [pizzatype] = " << it->begin()->pizza << " | [pizzasize] = " << it->begin()->size << " * " << counter << std::endl;
+                it = _orders.erase(it);
+            } else
+                it++;
+        }
+    }
 }
 
 
