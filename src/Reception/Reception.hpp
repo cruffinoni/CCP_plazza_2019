@@ -11,6 +11,7 @@
 #include <list>
 #include <cstdint>
 #include "Plazza/IPC.hpp"
+#include "Plazza/IPCPool.hpp"
 #include "Pizza/Pizza.hpp"
 
 namespace Kitchen {
@@ -40,6 +41,8 @@ namespace Reception {
             uint16_t _refreshStock;
             std::list<std::shared_ptr<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>>> _kitchenList;
             std::list<std::list<std::shared_ptr<Pizza::pizza_t>>> _orders;
+
+            Plazza::IPCPool<Reception *, Kitchen::Kitchen> _pool;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };
 }
