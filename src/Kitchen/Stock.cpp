@@ -8,7 +8,7 @@
 #include "Kitchen/Kitchen.hpp"
 
 Kitchen::Stock::Stock() {
-    for (int i = Pizza::Ingredients::Ingredient_None; i != Pizza::Invalid; ++i)
+    for (int i = Pizza::Ingredients::Doe; i != Pizza::Invalid_Ingredient; ++i)
         this->_food[static_cast<Pizza::Ingredients>(i)] = DEFAULT_INGREDIENT_QUANTITY;
 }
 
@@ -41,5 +41,5 @@ void Kitchen::Stock::withdrawStock(std::list<Pizza::Ingredients> &list) {
 
 Kitchen::Stock::~Stock() {
     for (auto &i: this->_food)
-        printf("Food: %i = %lu\n", i.first, i.second);
+        printf("Food: %i = %lu\n", i.first + 1, i.second);
 }

@@ -13,8 +13,6 @@
 
 namespace Pizza {
     enum Ingredients {
-        Ingredient_None,
-
         Doe,
         Tomato,
         Gruyere,
@@ -25,7 +23,7 @@ namespace Pizza {
         Goat_Cheese,
         Chief_Love,
 
-        Invalid
+        Invalid_Ingredient
     };
 
     enum PizzaSize {

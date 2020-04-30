@@ -21,9 +21,8 @@ static void work(Cook::Cook *worker) {
     } while (worker->getCookState() != Cook::Cook::LEAVING);
 }
 
-Cook::Cook::Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc) : _state(PENDING), _ipc(ipc), _thread(work, this) {
-    //printf("Ascendant: %p & Descendant: %p\n", this->_ipc->getAscendant(), this->_ipc->getDescendant().get());
-    //this->_thread = std::make_shared<std::thread>(work, this);
+Cook::Cook::Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc) :
+    _state(PENDING), _ipc(ipc), _thread(work, this) {
 }
 
 Cook::Cook::~Cook() {

@@ -15,7 +15,6 @@ namespace Reception {
     {}
 
     void Reception::addKitchen() {
-        // TODO: Scoped Lock
         if (!this->_mutex.try_lock()) {
             std::cerr << "try lock invalid addKitchen" << std::endl;
             return;
@@ -51,12 +50,7 @@ namespace Reception {
 
     void Reception::checkCompletedOrders() {
         uint16_t counter;
-
-        // TODO: Scoped Lock
-        if (!this->_mutex.try_lock()) {
-            std::cerr << "try lock invalid checkCompletedOrders" << std::endl;
-            return;
-        }
+        Plazza::ScopedLock scopedLock(this->_mutex, "checkCompletedOrders");
         for (auto order = _orders.begin(); order != _orders.end();) {
             counter = 0;
             for (auto &pizza : *order) {
@@ -73,7 +67,6 @@ namespace Reception {
             } else
                 order++;
         }
-        this->_mutex.unlock();
     }
 
     void
@@ -81,10 +74,7 @@ namespace Reception {
         size_t lessBusy;
         std::shared_ptr<Kitchen::Kitchen> kitchen;
         size_t space;
-        if (!this->_mutex.try_lock()) {
-            std::cerr << "try lock invalid dispatchPizza" << std::endl;
-            return;
-        }
+        Plazza::ScopedLock scopedLock(this->_mutex, "dispatchPizza");
 
         for (auto &pizza : list) {
             lessBusy = 0;
@@ -105,7 +95,6 @@ namespace Reception {
                 //printf("Space after: %zu\n", kitchen->getAvailableSpace());
             }
         }
-        this->_mutex.unlock();
     }
 
     Reception::~Reception() {

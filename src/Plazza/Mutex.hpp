@@ -33,10 +33,15 @@ namespace Plazza {
 
     class ScopedLock {
         public:
-            ScopedLock(Mutex *mut){ _mut = mut; _mut->lock();}
-            ~ScopedLock(){_mut->unlock();}
+            explicit ScopedLock(Mutex &mutex, const std::string &location) : _mutex(mutex) {
+                this->_mutex.try_lock();
+            }
+
+            ~ScopedLock() {
+                _mutex.unlock();
+            }
         private:
-            Mutex *_mut;
+            Mutex &_mutex;
     };
 }
 

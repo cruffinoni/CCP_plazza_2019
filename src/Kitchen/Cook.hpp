@@ -34,9 +34,8 @@ namespace Cook {
             void cookPizza();
 
         private:
-            Kitchen::Kitchen::SharedKitchenIPC_t _ipc;
             State _state;
-            //std::shared_ptr<std::thread> _thread;
+            Kitchen::Kitchen::SharedKitchenIPC_t _ipc;
             Plazza::Thread _thread;
             std::shared_ptr<Pizza::pizza_t> _pizza;
     };

@@ -18,13 +18,12 @@ void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
         return;
     for (auto &pizza : this->_orders) {
         if (pizza->status == Pizza::WAITING) {
-            Plazza::ScopedLock lock(&_mutex);
+            Plazza::ScopedLock lock(this->_mutex, "checkForWork");
             pizza->status = Pizza::COOKING;
             try {
                 worker->giveWork(pizza);
             } catch (const Cook::Exceptions::WorkerBusy &e) {
                 std::cerr << e.what() << std::endl;
-                this->_mutex.unlock();
                 continue;
             }
             return;
@@ -56,21 +55,20 @@ std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() c
 }
 
 void Kitchen::Kitchen::refreshStock() {
-    Plazza::ScopedLock lock(&_mutex);
+    Plazza::ScopedLock lock(this->_mutex, "refreshStock");
     this->_stock.refresh();
 }
 
 void Kitchen::Kitchen::withdrawStock(std::list<Pizza::Ingredients> &list) {
-    Plazza::ScopedLock lock(&_mutex);
+    Plazza::ScopedLock lock(this->_mutex, "withdrawStock");
     this->_stock.withdrawStock(list);
 }
 
 void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza, Pizza::Status status) {
-    Plazza::ScopedLock lock(&_mutex);
+    Plazza::ScopedLock lock(this->_mutex, "changePizzaStatus");
     pizza->status = status;
     if (status == Pizza::Status::BAKED)
         this->_ipc->getAscendant()->checkCompletedOrders();
-    this->_mutex.unlock();
 }
 
 size_t Kitchen::Kitchen::getAvailableSpace() {
