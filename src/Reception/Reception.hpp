@@ -11,7 +11,6 @@
 #include <list>
 #include <cstdint>
 #include "Plazza/IPC.hpp"
-#include "Plazza/IPCPool.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Plazza/Mutex.hpp"
 
@@ -25,7 +24,7 @@ namespace Reception {
             typedef Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ReceptionIPC_t;
             typedef std::shared_ptr<ReceptionIPC_t> SharedReceptionIPC_t;
             Reception(uint16_t cooks, float multiplier, uint16_t refresh);
-            ~Reception();
+            ~Reception() = default;
 
             void addKitchen();
             void closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen);

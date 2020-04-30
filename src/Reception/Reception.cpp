@@ -15,10 +15,7 @@ namespace Reception {
     {}
 
     void Reception::addKitchen() {
-        if (!this->_mutex.try_lock()) {
-            std::cerr << "try lock invalid addKitchen" << std::endl;
-            return;
-        }
+        this->_mutex.try_lock();
         this->_kitchenPool.add(this, this->_cooks);
         this->_mutex.unlock();
         this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
@@ -43,6 +40,7 @@ namespace Reception {
             list.push_back(std::make_shared<Pizza::pizza_t>(pizza));
         _orders.push_back(list);
         this->dispatchPizza(list);
+
         // TODO: À mettre dans le fork de l'enfant
         printf("Front: %p\n", this->_kitchenPool.front()->getDescendant().get());
         this->_kitchenPool.front()->getDescendant()->run();
@@ -76,7 +74,7 @@ namespace Reception {
         size_t space;
         Plazza::ScopedLock scopedLock(this->_mutex, "dispatchPizza");
 
-        for (auto &pizza : list) {
+        for (auto pizza = list.begin(); pizza != list.end(); ++pizza) {
             lessBusy = 0;
             for (auto &ipc: this->_kitchenPool) {
                 space = ipc->getDescendant()->getAvailableSpace();
@@ -85,19 +83,19 @@ namespace Reception {
                     lessBusy = space;
                 }
             }
+            printf("Less busy: %zu & kitchen: %p\n", lessBusy, kitchen.get());
             if (lessBusy == 0) {
-                // TODO: Ouvrir une nouvelle cuisine et recommencer l'attribution de la commande
-                //  actuelle ; besoin de remplacer le for (auto) ?
-                std::cerr << "No space found for the pizza, cannot dispatch it" << std::endl;
+                std::cerr << "No space found for the pizza, trying again..." << std::endl;
+                //this->addKitchen();
+                //--pizza;
             } else {
-                //printf("Space before adding a cmd: %zu\n", space);
-                kitchen->addCommand(pizza);
-                //printf("Space after: %zu\n", kitchen->getAvailableSpace());
+                std::cout << "Adding pizza " << pizza->get()->type << std::endl;
+                kitchen->addCommand(*pizza);
             }
         }
     }
 
-    Reception::~Reception() {
-        this->_orders.clear();
-    }
+    //Reception::~Reception() {
+    //    this->_orders.clear();
+    //}
 }

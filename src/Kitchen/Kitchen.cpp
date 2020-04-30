@@ -72,6 +72,7 @@ void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza,
 }
 
 size_t Kitchen::Kitchen::getAvailableSpace() {
+    printf("Size: %hu & orders: %zu\n", this->_sizeList, this->_orders.size());
     return (this->_sizeList - this->_orders.size());
 }
 

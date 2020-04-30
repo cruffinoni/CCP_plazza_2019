@@ -14,7 +14,7 @@
 #include <memory>
 #include <cstddef>
 #include <chrono>
-#include "Plazza/IPCPool.hpp"
+#include "Plazza/IPC.hpp"
 #include "Plazza/Mutex.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"

@@ -26,7 +26,7 @@ int main(const int ac, const char **av)
     //ipc.setDescendant(kitchen);
 
 
-    Reception::Reception recp(2, 4, 5);
+    Reception::Reception recp(1, 4, 5);
     for (int i = 0; i < 1; ++i) {
         recp.addKitchen();
     }
