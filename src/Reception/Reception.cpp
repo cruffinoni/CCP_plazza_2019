@@ -15,22 +15,14 @@ namespace Reception {
     {}
 
     void Reception::addKitchen() {
-        auto ipc = std::make_shared<ReceptionIPC_t>(this);
-        auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
-        ipc->setDescendant(kitchen);
-        this->_kitchenPool.add(ipc);
+        // TODO: Scoped Lock
+        this->_mutex.try_lock();
+        this->_kitchenPool.add(this, this->_cooks);
+        this->_mutex.unlock();
         this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     }
 
     void Reception::closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen) {
-        //for (auto i = this->_kitchenPool.begin(); i != this->_kitchenPool.end(); ++i) {
-        //    if (i->get()->getDescendant() == kitchen) {
-        //        i->get()->getDescendant().reset();
-        //        this->_kitchenPool.erase(i);
-        //        std::cout << "Kitchen closed" << std::endl;
-        //        return;
-        //    }
-        //}
         if (!this->_kitchenPool.pop(kitchen))
             std::cerr << "A kitchen cannot be closed" << std::endl;
     }
@@ -50,12 +42,15 @@ namespace Reception {
         _orders.push_back(list);
         this->dispatchPizza(list);
         // TODO: À mettre dans le fork de l'enfant
+        printf("Front: %p\n", this->_kitchenPool.front()->getDescendant().get());
         this->_kitchenPool.front()->getDescendant()->run();
     }
 
     void Reception::checkCompletedOrders() {
         uint16_t counter;
 
+        // TODO: Scoped Lock
+        this->_mutex.try_lock();
         for (auto order = _orders.begin(); order != _orders.end();) {
             counter = 0;
             for (auto &pizza : *order) {
@@ -72,6 +67,7 @@ namespace Reception {
             } else
                 order++;
         }
+        this->_mutex.unlock();
     }
 
     void
@@ -79,6 +75,8 @@ namespace Reception {
         size_t lessBusy;
         std::shared_ptr<Kitchen::Kitchen> kitchen;
         size_t space;
+        if (!this->_mutex.try_lock())
+            return;
 
         for (auto &pizza : list) {
             lessBusy = 0;
@@ -99,12 +97,10 @@ namespace Reception {
                 //printf("Space after: %zu\n", kitchen->getAvailableSpace());
             }
         }
+        this->_mutex.unlock();
     }
 
-    //Reception::~Reception() {
-        //for (auto &i : this->_kitchenList)
-        //    i->getDescendant().reset();
-        //this->_kitchenList.clear();
-        //this->_orders.clear();
-    //}
+    Reception::~Reception() {
+        this->_orders.clear();
+    }
 }

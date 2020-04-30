@@ -16,9 +16,12 @@
 #include <chrono>
 #include "Plazza/IPCPool.hpp"
 #include "Plazza/Mutex.hpp"
-#include "Kitchen/Cook.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
+
+namespace Cook {
+    class Cook;
+}
 
 namespace Kitchen {
     class Stock {
@@ -38,6 +41,9 @@ namespace Kitchen {
 
     class Kitchen {
         public:
+            typedef Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>> KitchenIPC_t;
+            typedef std::shared_ptr<KitchenIPC_t> SharedKitchenIPC_t;
+
             Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc);
             ~Kitchen();
 
@@ -53,11 +59,8 @@ namespace Kitchen {
         private:
             void checkForWork(std::shared_ptr<Cook::Cook> &worker);
 
-            //IPC_shared_t<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
-            //Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
-            Reception::Reception::SharedReceptionIPC_t &_ipc;
-
-            std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>> _cooksList;
+            Reception::Reception::SharedReceptionIPC_t _ipc;
+            Plazza::IPCPool<Kitchen *, Cook::Cook> _cookPool;
             Plazza::Mutex _mutex;
             Stock _stock;
             uint16_t _sizeList;

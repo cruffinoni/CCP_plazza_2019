@@ -10,28 +10,34 @@
 
 #include <list>
 #include <memory>
+#include <functional>
 #include "IPC.hpp"
 
 namespace Plazza {
     template <class A, class D>
     class IPCPool {
         public:
-            IPCPool() = default;
-            IPCPool(uint16_t instance) {
-                for (uint16_t i = 0; i < instance; ++i) {
-
-                }
-            }
-            ~IPCPool() = default;
             typedef IPC<A, std::shared_ptr<D>> IPCPool_t;
 
-            void add(std::shared_ptr<IPCPool_t> &ipc) {
-                this->_pool.emplace_back(ipc);
-            };
+            IPCPool() = default;
+            template <typename ...variadic>
+            explicit IPCPool(uint16_t instances, A parent, variadic&&... args) {
+                for (uint16_t i = 0; i < instances; ++i)
+                    this->add(parent, args...);
+            }
+            ~IPCPool() {
+                for (auto &i: this->_pool)
+                    i->getDescendant().reset(); // Force the deletion of every shared_ptr
+                this->_pool.clear();
+            }
 
-            void add(std::shared_ptr<IPCPool_t> &&ipc) {
+            template <typename ...variadic>
+            void add(A parent, variadic &&... args) {
+                auto ipc = std::make_shared<IPCPool_t>(parent);
+                std::shared_ptr<D> descendant = std::make_shared<D>(std::forward<variadic>(args)..., ipc);
+                ipc->setDescendant(descendant);
                 this->_pool.emplace_back(ipc);
-            };
+            }
 
             bool pop(std::shared_ptr<D> &descendant) {
                 for (auto i = this->_pool.begin(); i != this->_pool.end(); ++i) {
@@ -47,7 +53,6 @@ namespace Plazza {
             std::shared_ptr<IPCPool_t> &back() {
                 return (this->_pool.back());
             }
-
             std::shared_ptr<IPCPool_t> &front() {
                 return (this->_pool.front());
             }
@@ -55,7 +60,6 @@ namespace Plazza {
             auto begin() {
                 return (this->_pool.begin());
             }
-
             auto end() {
                 return (this->_pool.end());
             }
