@@ -9,16 +9,8 @@
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Cook.hpp"
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::reception_ipc_t &ipc) : _ipc(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc) : _ipc(ipc), _cookPool(cooks, this) {
     this->_sizeList = 2 * cooks;
-    this->_timer = std::chrono::system_clock::now();
-    for (uint16_t i = 0; i < cooks; ++i) {
-        this->_cooksList.emplace_back(this,
-            std::make_shared<Cook::Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>(this)));
-        std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
-        auto &lastCook = this->_cooksList.back();
-        lastCook.setDescendant(lastCook.getDescendant());
-    }
 }
 
 void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
@@ -46,11 +38,11 @@ void Kitchen::Kitchen::run() {
     this->_timer = std::chrono::system_clock::now();
     do {
         counter = 0;
-        for (auto ipc : _cooksList) {
-            if (ipc->getCookState() == Cook::Cook::State::WORKING)
+        for (auto &ipc : _cookPool) {
+            if (ipc->getDescendant()->getCookState() == Cook::Cook::State::WORKING)
                 counter++;
             else
-                this->checkForWork(ipc.getDescendant());
+                this->checkForWork(ipc->getDescendant());
         }
         if (counter > 0)
             _timer = std::chrono::system_clock::now();
@@ -91,42 +83,4 @@ void Kitchen::Kitchen::addCommand(std::shared_ptr<Pizza::pizza_t> &order) {
 
 Kitchen::Kitchen::~Kitchen() {
     this->_orders.clear();
-    this->_cooksList.clear();
-}
-
-Kitchen::Stock::Stock() {
-    for (int i = Pizza::Ingredients::Ingredient_None; i != Pizza::Invalid; ++i)
-        this->_food[static_cast<Pizza::Ingredients>(i)] = DEFAULT_INGREDIENT_QUANTITY;
-}
-
-void Kitchen::Stock::refresh() {
-    for (auto &i: this->_food)
-        i.second++;
-}
-
-bool Kitchen::Stock::operator==(std::list<Pizza::Ingredients> &list) {
-    for (auto &i : list) {
-        if (this->_food.find(i) == this->_food.end())
-            return (false);
-        if (this->_food[i] == 0)
-            return (false);
-    }
-    return (true);
-}
-
-bool Kitchen::Stock::operator!=(std::list<Pizza::Ingredients> &list) {
-    return (!(*this == list));
-}
-
-void Kitchen::Stock::withdrawStock(std::list<Pizza::Ingredients> &list) {
-    if (*this != list)
-        // throw exception
-        return;
-    for (auto &i : list)
-        this->_food[i]--;
-}
-
-Kitchen::Stock::~Stock() {
-    for (auto &i: this->_food)
-        printf("Food: %i = %lu\n", i.first, i.second);
 }

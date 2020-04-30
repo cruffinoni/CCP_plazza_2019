@@ -10,20 +10,15 @@
 
 #include <thread>
 #include <mutex>
+#include "Plazza/Thread.hpp"
 #include "Plazza/IPC.hpp"
 #include "Pizza/Pizza.hpp"
-
-namespace Kitchen {
-    class Kitchen;
-}
+#include "Kitchen/Kitchen.hpp"
 
 namespace Cook {
     class Cook {
-        private:
-            typedef Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> CookIPC_t;
-
         public:
-            explicit Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc);
+            explicit Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc);
             ~Cook();
 
             enum State {
@@ -35,15 +30,14 @@ namespace Cook {
             State getCookState() const;
             void setCookState(State state);
             std::shared_ptr<Pizza::pizza_t> getCurrentPizza() const;
-            std::shared_ptr<std::thread> &getThread();
-            CookIPC_t &getIPC();
             void giveWork(std::shared_ptr<Pizza::pizza_t> &pizza);
             void cookPizza();
 
         private:
-            CookIPC_t _ipc;
+            Kitchen::Kitchen::SharedKitchenIPC_t _ipc;
             State _state;
-            std::shared_ptr<std::thread> _thread;
+            //std::shared_ptr<std::thread> _thread;
+            Plazza::Thread _thread;
             std::shared_ptr<Pizza::pizza_t> _pizza;
     };
 

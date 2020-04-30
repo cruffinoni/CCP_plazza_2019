@@ -14,8 +14,16 @@
 namespace Plazza {
     class Thread {
         public:
-            //Thread() : _th
+            template<class func, typename ...variadic>
+            explicit Thread(func &&fn, variadic &&... args) {
+                this->_thread = std::make_shared<std::thread>(fn, std::forward<variadic>(args)...);
+            }
+            Thread() = delete;
 
+            ~Thread() {
+                if (this->_thread->joinable())
+                    this->_thread->join();
+            }
         private:
             std::shared_ptr<std::thread> _thread;
     };
