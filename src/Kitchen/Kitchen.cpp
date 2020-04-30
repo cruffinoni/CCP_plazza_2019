@@ -9,7 +9,7 @@
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Cook.hpp"
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::reception_ipc_t &ipc) : _ipc(ipc) {
     this->_sizeList = 2 * cooks;
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
@@ -17,8 +17,6 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception
         std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
-        //if (i == 1)
-        //    lastCook->giveWork(Pizza::PizzaType::Americana);
     }
     printf("Size of the list: %zu\n", this->_cooksList.size());
 }
@@ -34,6 +32,8 @@ void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
                 worker->giveWork(pizza);
             } catch (const Cook::Exceptions::WorkerBusy &e) {
                 std::cerr << e.what() << std::endl;
+                this->_mutex.unlock();
+                continue;
             }
             this->_mutex.unlock();
             return;
@@ -56,7 +56,8 @@ void Kitchen::Kitchen::run() {
         if (counter > 0)
             _timer = std::chrono::system_clock::now();
     } while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - _timer).count() < 5000);
-    printf("Nobody's working since 5 sec\n");
+    printf("Nobody's working since 5 sec. Closing kitchen: %p\n", this->_ipc->getDescendant().get());
+    this->_ipc->getAscendant()->closeKitchen(this->_ipc->getDescendant());
 }
 
 std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() const {
@@ -81,6 +82,8 @@ void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza,
     if (!this->_mutex.try_lock())
         return;
     pizza->status = status;
+    if (status == Pizza::Status::BAKED)
+        this->_ipc->getAscendant()->checkCompletedOrders();
     this->_mutex.unlock();
 }
 
@@ -90,6 +93,11 @@ size_t Kitchen::Kitchen::getAvailableSpace() {
 
 void Kitchen::Kitchen::addCommand(std::shared_ptr<Pizza::pizza_t> &order) {
     this->_orders.emplace_back(order);
+}
+
+Kitchen::Kitchen::~Kitchen() {
+    this->_orders.clear();
+    this->_cooksList.clear();
 }
 
 Kitchen::Stock::Stock() {

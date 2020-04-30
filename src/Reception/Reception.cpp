@@ -5,45 +5,43 @@
 ** Reception
 */
 
+#include <iostream>
 #include "Reception.hpp"
 #include "Kitchen/Kitchen.hpp"
 
-namespace Reception
-{
+namespace Reception {
     Reception::Reception(uint16_t cooks, float multiplier, uint16_t refresh) :
         _cooks(cooks), _multiplier(multiplier), _refreshStock(refresh)
     {}
 
     void Reception::addKitchen() {
-        Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ipc(this);
+        auto ipc = std::make_shared<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>>(this);
         auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
-        ipc.setDescendant(kitchen);
+        ipc->setDescendant(kitchen);
         _kitchenList.emplace_back(ipc);
-        this->addOrder(Pizza::pizza_t(Pizza::Americana, Pizza::S), 2);
+        this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     }
 
-    void Reception::closeKitchen() {
-        std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
-
-        for (auto it = _kitchenList.begin(); it != _kitchenList.end();) {
-            auto delta = (time - it->getDescendant()->getTime());
-            if (std::chrono::duration_cast<std::chrono::seconds>(delta).count() > DEFAULT_KITCHEN_TIMEOUT) {
-                std::cout << "close Kitchen" << std::endl;
-                it = _kitchenList.erase(it);
-            } else
-                ++it;
+    void Reception::closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen) {
+        printf("!->Size list: %zu\n", this->_kitchenList.size());
+        for (auto i = this->_kitchenList.begin(); i != this->_kitchenList.end(); ++i) {
+            if (i->get()->getDescendant() == kitchen) {
+                i->get()->getDescendant().reset();
+                this->_kitchenList.erase(i);
+                printf("->Size list: %zu\n", this->_kitchenList.size());
+                std::cout << "Kitchen closed" << std::endl;
+                return;
+            }
         }
+        std::cerr << "A kitchen cannot be closed" << std::endl;
     }
-    /*
-     * TODO: Faire une fonction de remove dans la reception appelé par la kitchen et
-     * check si la commande est complétée ainsi, la remove si c'est le cas
-     */
 
     void Reception::addOrder(Pizza::pizza_t &pizza, uint16_t nb) {
         std::list<std::shared_ptr<Pizza::pizza_t>> list;
         for (uint16_t i = 0; i < nb; ++i)
             list.push_back(std::make_shared<Pizza::pizza_t>(pizza));
         _orders.push_back(list);
+        this->dispatchPizza(list);
     }
 
     void Reception::addOrder(Pizza::pizza_t &&pizza, uint16_t nb) {
@@ -51,13 +49,12 @@ namespace Reception
         for (uint16_t i = 0; i < nb; ++i)
             list.push_back(std::make_shared<Pizza::pizza_t>(pizza));
         _orders.push_back(list);
-        // TODO: Move dans une fonction l'algo de dispatch & le faire pizza/pizza
-        for (auto &kitchen : this->_kitchenList) {
-            printf("Space available: %zu\n", kitchen->getAvailableSpace());
-        }
+        this->dispatchPizza(list);
+        // TODO: À mettre dans le fork de l'enfant
+        this->_kitchenList.front()->getDescendant()->run();
     }
 
-    void Reception::outputOrders() {
+    void Reception::checkCompletedOrders() {
         uint16_t counter;
 
         for (auto order = _orders.begin(); order != _orders.end();) {
@@ -77,6 +74,38 @@ namespace Reception
                 order++;
         }
     }
+
+    void
+    Reception::dispatchPizza(std::list<std::shared_ptr<Pizza::pizza_t>> &list) {
+        size_t lessBusy;
+        std::shared_ptr<Kitchen::Kitchen> kitchen;
+        size_t space;
+
+        for (auto &pizza : list) {
+            lessBusy = 0;
+            for (auto &ipc: this->_kitchenList) {
+                space = ipc->getDescendant()->getAvailableSpace();
+                if (space > lessBusy) {
+                    kitchen = ipc->getDescendant();
+                    lessBusy = space;
+                }
+            }
+            if (lessBusy == 0) {
+                // TODO: Ouvrir une nouvelle cuisine et recommencer l'attribution de la commande
+                //  actuelle ; besoin de remplacer le for (auto) ?
+                std::cerr << "No space found for the pizza, cannot dispatch it" << std::endl;
+            } else {
+                //printf("Space before adding a cmd: %zu\n", space);
+                kitchen->addCommand(pizza);
+                //printf("Space after: %zu\n", kitchen->getAvailableSpace());
+            }
+        }
+    }
+
+    Reception::~Reception() {
+        for (auto &i : this->_kitchenList)
+            i->getDescendant().reset();
+        this->_kitchenList.clear();
+        this->_orders.clear();
+    }
 }
-
-
