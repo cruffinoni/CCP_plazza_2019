@@ -49,10 +49,11 @@ namespace Kitchen {
             void run();
             size_t getAvailableSpace();
             void addCommand(std::shared_ptr<Pizza::pizza_t> &order);
+            Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &getIPC() {return _ipc;}
 
         private:
             void checkForWork(std::shared_ptr<Cook::Cook> &worker);
-            const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
+            Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
             std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>> _cooksList;
             Plazza::Mutex _mutex;
             Stock _stock;

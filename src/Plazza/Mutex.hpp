@@ -30,6 +30,14 @@ namespace Plazza {
         private:
             std::mutex _mutex;
     };
+
+    class ScopedLock {
+        public:
+            ScopedLock(Mutex *mut){ _mut = mut; _mut->lock();}
+            ~ScopedLock(){_mut->unlock();}
+        private:
+            Mutex *_mut;
+    };
 }
 
 #endif

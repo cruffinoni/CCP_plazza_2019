@@ -9,8 +9,11 @@
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Cook.hpp"
 
+
+
 Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> &ipc) : _ipc(ipc) {
     this->_sizeList = 2 * cooks;
+    this->_timer = std::chrono::system_clock::now();
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
             std::make_shared<Cook::Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>(this)));
@@ -21,6 +24,7 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, const Plazza::IPC<Reception::Reception
         //    lastCook->giveWork(Pizza::PizzaType::Americana);
     }
     printf("Size of the list: %zu\n", this->_cooksList.size());
+    run();
 }
 
 void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
@@ -28,14 +32,13 @@ void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
         return;
     for (auto &pizza : this->_orders) {
         if (pizza->status == Pizza::WAITING) {
-            this->_mutex.try_lock();
+            Plazza::ScopedLock lock(&_mutex);
             pizza->status = Pizza::COOKING;
             try {
                 worker->giveWork(pizza);
             } catch (const Cook::Exceptions::WorkerBusy &e) {
                 std::cerr << e.what() << std::endl;
             }
-            this->_mutex.unlock();
             return;
         }
     }
@@ -56,6 +59,8 @@ void Kitchen::Kitchen::run() {
         if (counter > 0)
             _timer = std::chrono::system_clock::now();
     } while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - _timer).count() < 5000);
+    printf("%p\n", _ipc.getDescendant().get());
+    _ipc.getAscendant()->closeKitchen();
     printf("Nobody's working since 5 sec\n");
 }
 
@@ -64,24 +69,18 @@ std::chrono::time_point<std::chrono::system_clock> Kitchen::Kitchen::getTime() c
 }
 
 void Kitchen::Kitchen::refreshStock() {
-    if (!this->_mutex.try_lock())
-        return;
+    Plazza::ScopedLock lock(&_mutex);
     this->_stock.refresh();
-    this->_mutex.unlock();
 }
 
 void Kitchen::Kitchen::withdrawStock(std::list<Pizza::Ingredients> &list) {
-    if (!this->_mutex.try_lock())
-        return;
+    Plazza::ScopedLock lock(&_mutex);
     this->_stock.withdrawStock(list);
-    this->_mutex.unlock();
 }
 
 void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza, Pizza::Status status) {
-    if (!this->_mutex.try_lock())
-        return;
+    Plazza::ScopedLock lock(&_mutex);
     pizza->status = status;
-    this->_mutex.unlock();
 }
 
 size_t Kitchen::Kitchen::getAvailableSpace() {
