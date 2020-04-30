@@ -29,9 +29,8 @@ int main(const int ac, const char **av)
     Reception::Reception recp(3, 4, 5);
     for (int i = 0; i < 1; ++i) {
         recp.addKitchen();
-        recp.closeKitchen();
     }
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     return (0);
 }
 

@@ -20,21 +20,25 @@ namespace Kitchen {
 namespace Reception {
     class Reception {
         public:
+            typedef std::shared_ptr<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> reception_ipc_t;
             Reception(uint16_t cooks, float multiplier, uint16_t refresh);
-            ~Reception() = default;
+            ~Reception();
 
             void addKitchen();
-            void closeKitchen();
+            void closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen);
 
             void addOrder(Pizza::pizza_t &pizza, uint16_t nb);
             void addOrder(Pizza::pizza_t &&pizza, uint16_t nb);
-            void outputOrders();
+            void checkCompletedOrders();
+            //void completePizza(std::shared_ptr<Pizza::pizza_t> baked);
 
         private:
+            void dispatchPizza(std::list<std::shared_ptr<Pizza::pizza_t>> &order);
+
             uint16_t _cooks;
             float _multiplier;
             uint16_t _refreshStock;
-            std::list<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>> _kitchenList;
+            std::list<std::shared_ptr<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>>> _kitchenList;
             std::list<std::list<std::shared_ptr<Pizza::pizza_t>>> _orders;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };

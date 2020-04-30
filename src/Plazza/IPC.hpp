@@ -16,6 +16,8 @@ namespace Plazza {
     template <class A, class D>
     class IPC {
         public:
+            //typedef std::shared_ptr<IPC<A, D>> IPC_shared_t;
+            //using IPC_shared_t = std::shared_ptr<IPC<decltype(A), D>>;
             explicit IPC(A parent) : _ascendant(parent) {}
             IPC(A parent, D child) : _ascendant(parent), _descendant(child) {}
             ~IPC() = default;
