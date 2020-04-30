@@ -24,6 +24,8 @@ static void work(Cook::Cook *worker) {
 }
 
 Cook::Cook::Cook(const Plazza::IPC<Kitchen::Kitchen *, std::shared_ptr<Cook>> &ipc) : _ipc(ipc) {
+    printf("Ascendant: %p & Descendant: %p\n", this->_ipc.getAscendant(), this->_ipc.getDescendant().get());
+
     this->_state = PENDING;
     this->_thread = std::make_shared<std::thread>(work, this);
 }

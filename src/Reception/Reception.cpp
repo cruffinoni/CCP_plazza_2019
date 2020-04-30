@@ -15,23 +15,24 @@ namespace Reception {
     {}
 
     void Reception::addKitchen() {
-        auto ipc = std::make_shared<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>>(this);
+        auto ipc = std::make_shared<ReceptionIPC_t>(this);
         auto kitchen = std::make_shared<Kitchen::Kitchen>(this->_cooks, ipc);
         ipc->setDescendant(kitchen);
-        _kitchenList.emplace_back(ipc);
+        this->_kitchenPool.add(ipc);
         this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     }
 
     void Reception::closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen) {
-        for (auto i = this->_kitchenList.begin(); i != this->_kitchenList.end(); ++i) {
-            if (i->get()->getDescendant() == kitchen) {
-                i->get()->getDescendant().reset();
-                this->_kitchenList.erase(i);
-                std::cout << "Kitchen closed" << std::endl;
-                return;
-            }
-        }
-        std::cerr << "A kitchen cannot be closed" << std::endl;
+        //for (auto i = this->_kitchenPool.begin(); i != this->_kitchenPool.end(); ++i) {
+        //    if (i->get()->getDescendant() == kitchen) {
+        //        i->get()->getDescendant().reset();
+        //        this->_kitchenPool.erase(i);
+        //        std::cout << "Kitchen closed" << std::endl;
+        //        return;
+        //    }
+        //}
+        if (!this->_kitchenPool.pop(kitchen))
+            std::cerr << "A kitchen cannot be closed" << std::endl;
     }
 
     void Reception::addOrder(Pizza::pizza_t &pizza, uint16_t nb) {
@@ -49,7 +50,7 @@ namespace Reception {
         _orders.push_back(list);
         this->dispatchPizza(list);
         // TODO: À mettre dans le fork de l'enfant
-        this->_kitchenList.front()->getDescendant()->run();
+        this->_kitchenPool.front()->getDescendant()->run();
     }
 
     void Reception::checkCompletedOrders() {
@@ -81,7 +82,7 @@ namespace Reception {
 
         for (auto &pizza : list) {
             lessBusy = 0;
-            for (auto &ipc: this->_kitchenList) {
+            for (auto &ipc: this->_kitchenPool) {
                 space = ipc->getDescendant()->getAvailableSpace();
                 if (space > lessBusy) {
                     kitchen = ipc->getDescendant();
@@ -100,10 +101,10 @@ namespace Reception {
         }
     }
 
-    Reception::~Reception() {
-        for (auto &i : this->_kitchenList)
-            i->getDescendant().reset();
-        this->_kitchenList.clear();
-        this->_orders.clear();
-    }
+    //Reception::~Reception() {
+        //for (auto &i : this->_kitchenList)
+        //    i->getDescendant().reset();
+        //this->_kitchenList.clear();
+        //this->_orders.clear();
+    //}
 }

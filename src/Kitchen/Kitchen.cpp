@@ -9,12 +9,12 @@
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Cook.hpp"
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::reception_ipc_t &ipc) : _ipc(ipc) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc) : _ipc(ipc) {
     this->_sizeList = 2 * cooks;
     for (uint16_t i = 0; i < cooks; ++i) {
         this->_cooksList.emplace_back(this,
             std::make_shared<Cook::Cook>(Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>(this)));
-        std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(300 * i));
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
     }

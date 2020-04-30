@@ -14,7 +14,7 @@
 #include <memory>
 #include <cstddef>
 #include <chrono>
-#include "Plazza/IPC.hpp"
+#include "Plazza/IPCPool.hpp"
 #include "Plazza/Mutex.hpp"
 #include "Kitchen/Cook.hpp"
 #include "Pizza/Pizza.hpp"
@@ -38,7 +38,7 @@ namespace Kitchen {
 
     class Kitchen {
         public:
-            Kitchen(uint16_t cooks, Reception::Reception::reception_ipc_t &ipc);
+            Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc);
             ~Kitchen();
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
@@ -55,7 +55,7 @@ namespace Kitchen {
 
             //IPC_shared_t<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
             //Plazza::IPC<Reception::Reception *, std::shared_ptr<Kitchen>> _ipc;
-            Reception::Reception::reception_ipc_t _ipc;
+            Reception::Reception::SharedReceptionIPC_t &_ipc;
 
             std::list<Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>>> _cooksList;
             Plazza::Mutex _mutex;
