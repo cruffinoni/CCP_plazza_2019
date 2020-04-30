@@ -17,23 +17,17 @@ static void work(Cook::Cook *worker) {
         //    worker->getIPC().getAscendant()->refreshStock();
         if (worker->getCookState() == Cook::Cook::WORKING)
             worker->cookPizza();
-        //printf("(%p - %p) Slept for 1sec\n", &worker->getThread(), worker->getIPC().getAscendant());
         std::this_thread::yield();
     } while (worker->getCookState() != Cook::Cook::LEAVING);
 }
 
-Cook::Cook::Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc) : _ipc(ipc) {
-    printf("Ascendant: %p & Descendant: %p\n", this->_ipc->getAscendant(), this->_ipc->getDescendant().get());
-    this->_state = PENDING;
-    this->_thread = std::make_shared<std::thread>(work, this);
+Cook::Cook::Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc) : _state(PENDING), _ipc(ipc), _thread(work, this) {
+    //printf("Ascendant: %p & Descendant: %p\n", this->_ipc->getAscendant(), this->_ipc->getDescendant().get());
+    //this->_thread = std::make_shared<std::thread>(work, this);
 }
 
 Cook::Cook::~Cook() {
     this->_state = LEAVING;
-    if (this->_thread->joinable()) {
-        printf("Waiting for the thread to end\n");
-        this->_thread->join();
-    }
 }
 
 Cook::Cook::State Cook::Cook::getCookState() const {

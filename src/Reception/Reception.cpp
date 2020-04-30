@@ -16,7 +16,10 @@ namespace Reception {
 
     void Reception::addKitchen() {
         // TODO: Scoped Lock
-        this->_mutex.try_lock();
+        if (!this->_mutex.try_lock()) {
+            std::cerr << "try lock invalid addKitchen" << std::endl;
+            return;
+        }
         this->_kitchenPool.add(this, this->_cooks);
         this->_mutex.unlock();
         this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
@@ -50,7 +53,10 @@ namespace Reception {
         uint16_t counter;
 
         // TODO: Scoped Lock
-        this->_mutex.try_lock();
+        if (!this->_mutex.try_lock()) {
+            std::cerr << "try lock invalid checkCompletedOrders" << std::endl;
+            return;
+        }
         for (auto order = _orders.begin(); order != _orders.end();) {
             counter = 0;
             for (auto &pizza : *order) {
@@ -75,8 +81,10 @@ namespace Reception {
         size_t lessBusy;
         std::shared_ptr<Kitchen::Kitchen> kitchen;
         size_t space;
-        if (!this->_mutex.try_lock())
+        if (!this->_mutex.try_lock()) {
+            std::cerr << "try lock invalid dispatchPizza" << std::endl;
             return;
+        }
 
         for (auto &pizza : list) {
             lessBusy = 0;

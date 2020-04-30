@@ -10,6 +10,7 @@
 
 #include <thread>
 #include <mutex>
+#include "Plazza/Thread.hpp"
 #include "Plazza/IPC.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Kitchen.hpp"
@@ -35,7 +36,8 @@ namespace Cook {
         private:
             Kitchen::Kitchen::SharedKitchenIPC_t _ipc;
             State _state;
-            std::shared_ptr<std::thread> _thread;
+            //std::shared_ptr<std::thread> _thread;
+            Plazza::Thread _thread;
             std::shared_ptr<Pizza::pizza_t> _pizza;
     };
 
