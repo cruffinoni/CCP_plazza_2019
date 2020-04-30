@@ -18,7 +18,6 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::reception_ipc_t 
         auto &lastCook = this->_cooksList.back();
         lastCook.setDescendant(lastCook.getDescendant());
     }
-    printf("Size of the list: %zu\n", this->_cooksList.size());
 }
 
 void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {

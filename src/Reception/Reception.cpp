@@ -23,12 +23,10 @@ namespace Reception {
     }
 
     void Reception::closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen) {
-        printf("!->Size list: %zu\n", this->_kitchenList.size());
         for (auto i = this->_kitchenList.begin(); i != this->_kitchenList.end(); ++i) {
             if (i->get()->getDescendant() == kitchen) {
                 i->get()->getDescendant().reset();
                 this->_kitchenList.erase(i);
-                printf("->Size list: %zu\n", this->_kitchenList.size());
                 std::cout << "Kitchen closed" << std::endl;
                 return;
             }
