@@ -48,6 +48,20 @@ namespace Pizza {
         BAKED
     };
 
+    static std::list<std::string> SizeName = {
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+    };
+    static std::list<std::string> PizzaName = {
+        "regina",
+        "margarita",
+        "americana",
+        "fantasia"
+    };
+
     static std::map<PizzaType, std::pair<std::list<Ingredients>, int>> PizzaList = {
         {Regina, {{Doe, Tomato, Gruyere}, 1}},
         {Margarita, {{Doe, Tomato, Gruyere, Ham}, 2}},

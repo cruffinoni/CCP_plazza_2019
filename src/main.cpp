@@ -9,6 +9,7 @@
 #include "Kitchen/Kitchen.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
+#include "Reception/CommandeReceiver.hpp"
 
 int main(const int ac, const char **av)
 {
@@ -27,9 +28,30 @@ int main(const int ac, const char **av)
 
 
     Reception::Reception recp(2, 4, 5);
-    for (int i = 0; i < 1; ++i) {
-        recp.addKitchen();
+    // for (int i = 0; i < 1; ++i) {
+    //     recp.addKitchen();
+    // }
+
+    Reception::CommandeReceiver cmd;
+
+    while(cmd.getStatus()) {
+        std::string line = cmd.getLine();
+        cmd.split(line, ';');
+        auto list = cmd.takeList();
+        for (auto act : list) {
+            if (cmd.isValide(act)) {
+                if (cmd.getStatus() == Reception::CommandeReceiver::EXIT)
+                    break;
+                auto order = cmd.getOrder(act);
+                if (cmd.getError())
+                    cmd.printError();
+                else
+                    recp.addOrder(order.first, order.second);
+            }
+
+        }
     }
+
     //std::this_thread::sleep_for(std::chrono::seconds(5));
     return (0);
 }

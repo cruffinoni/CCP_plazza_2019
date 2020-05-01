@@ -11,7 +11,8 @@ NAME			=	plazza
 SRC				=	./src/Kitchen/Kitchen.cpp		\
 					./src/Kitchen/Cook.cpp			\
 					./src/Kitchen/Stock.cpp			\
-					./src/Reception/Reception.cpp
+					./src/Reception/Reception.cpp 	\
+					./src/Reception/CommandeReceiver.cpp
 
 INCLUDE			=	./src/
 
