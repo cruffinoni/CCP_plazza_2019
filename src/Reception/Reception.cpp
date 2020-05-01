@@ -16,9 +16,17 @@ namespace Reception {
 
     void Reception::addKitchen() {
         this->_mutex.try_lock();
-        this->_kitchenPool.add(this, this->_cooks);
+        this->_kitchenPool.emplace_back(this, this->_cooks);
         this->_mutex.unlock();
-        this->addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
+        try {
+            if (this->_childPool.add() == 0) {
+                printf("(Child created) This: %p\n", this);
+                this->_kitchenPool.back()->getDescendant()->run();
+                exit(0);
+            }
+        } catch (const Plazza::ChildProcess::ForkFailed &e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     void Reception::closeKitchen(std::shared_ptr<Kitchen::Kitchen> &kitchen) {
@@ -42,8 +50,7 @@ namespace Reception {
         this->dispatchPizza(list);
 
         // TODO: À mettre dans le fork de l'enfant
-        printf("Front: %p\n", this->_kitchenPool.front()->getDescendant().get());
-        this->_kitchenPool.front()->getDescendant()->run();
+        //printf("Front: %p\n", this->_kitchenPool.front()->getDescendant().get());
     }
 
     void Reception::checkCompletedOrders() {
@@ -52,8 +59,9 @@ namespace Reception {
 
         for (auto orders = _orders.begin(); orders != _orders.end(); ++orders) {
             completed = true;
+            //printf("order: %p ->\n", &*orders);
             for (auto &pizza : *orders) {
-                printf("Pizza COMPLETED %p  & %i?\n", pizza.get(), pizza->status);
+                //printf("Pizza COMPLETED %p & %i?\n", pizza.get(), pizza->status);
                 if (pizza->status != Pizza::Status::BAKED)
                     completed = false;
             }
@@ -80,10 +88,11 @@ namespace Reception {
                     lessBusy = space;
                 }
             }
+            printf("Less busy: %zu\n", lessBusy);
             if (lessBusy == 0) {
                 std::cerr << "No space found for the pizza, trying again..." << std::endl;
-                //this->addKitchen();
-                //--pizza;
+                this->addKitchen();
+                --pizza;
             } else {
                 std::cout << "Adding pizza " << pizza->get() << std::endl;
                 kitchen->addCommand(*pizza);

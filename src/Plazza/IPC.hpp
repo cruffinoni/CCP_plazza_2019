@@ -50,7 +50,7 @@ namespace Plazza {
             template <typename ...variadic>
             explicit IPCPool(uint16_t instances, A parent, variadic&&... args) {
                 for (uint16_t i = 0; i < instances; ++i)
-                    this->add(parent, args...);
+                    this->emplace_back(parent, args...);
             }
             ~IPCPool() {
                 for (auto &i: this->_pool)
@@ -59,7 +59,7 @@ namespace Plazza {
             }
 
             template <typename ...variadic>
-            void add(A parent, variadic &&... args) {
+            void emplace_back(A parent, variadic &&... args) {
                 auto ipc = std::make_shared<IPCPool_t>(parent);
                 std::shared_ptr<D> descendant = std::make_shared<D>(std::forward<variadic>(args)..., ipc);
                 ipc->setDescendant(descendant);

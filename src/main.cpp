@@ -25,33 +25,37 @@ int main(const int ac, const char **av)
     //Plazza::IPC<Cook, std::shared_ptr<Kitchen::Kitchen>> ipc(parent);
     //Kitchen::Kitchen kitchen(4, ipc);
     //ipc.setDescendant(kitchen);
+    printf("Core program -> %i\n", getpid());
 
-
-    Reception::Reception recp(2, 4, 5);
-    // for (int i = 0; i < 1; ++i) {
-    //     recp.addKitchen();
-    // }
-
-    Reception::CommandeReceiver cmd;
-
-    while(cmd.getStatus()) {
-        std::string line = cmd.getLine();
-        cmd.split(line, ';');
-        auto list = cmd.takeList();
-        for (auto act : list) {
-            if (cmd.isValide(act)) {
-                if (cmd.getStatus() == Reception::CommandeReceiver::EXIT)
-                    break;
-                auto order = cmd.getOrder(act);
-                if (cmd.getError())
-                    cmd.printError();
-                else
-                    recp.addOrder(order.first, order.second);
-            }
-
-        }
+    //Reception::Reception recp(2, 4, 5);
+    //// for (int i = 0; i < 1; ++i) {
+    ////     recp.addKitchen();
+    //// }
+    //
+    //Reception::CommandeReceiver cmd;
+    //
+    //while(cmd.getStatus()) {
+    //    std::string line = cmd.getLine();
+    //    cmd.split(line, ';');
+    //    auto list = cmd.takeList();
+    //    for (auto act : list) {
+    //        if (cmd.isValide(act)) {
+    //            if (cmd.getStatus() == Reception::CommandeReceiver::EXIT)
+    //                break;
+    //            auto order = cmd.getOrder(act);
+    //            if (cmd.getError())
+    //                cmd.printError();
+    //            else
+    //                recp.addOrder(order.first, order.second);
+    //        }
+    //
+    //    }
+    //}
+    Reception::Reception reception(2, 4, 5);
+    for (int i = 0; i < 1; ++i) {
+        reception.addKitchen();
+        reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     }
-
-    //std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     return (0);
 }

@@ -14,11 +14,11 @@ Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionI
 }
 
 void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
+    Plazza::ScopedLock lock(this->_mutex, "checkForWork");
     if (this->_orders.empty())
         return;
     for (auto &pizza : this->_orders) {
         if (pizza->status == Pizza::WAITING) {
-            Plazza::ScopedLock lock(this->_mutex, "checkForWork");
             pizza->status = Pizza::COOKING;
             try {
                 worker->giveWork(pizza);
@@ -34,6 +34,7 @@ void Kitchen::Kitchen::checkForWork(std::shared_ptr<Cook::Cook> &worker) {
 void Kitchen::Kitchen::run() {
     uint16_t counter;
 
+    printf("instance of kitchen: %p ? %p\n", &this->_orders, this);
     this->_timer = std::chrono::system_clock::now();
     do {
         counter = 0;
@@ -74,11 +75,12 @@ void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza,
 }
 
 size_t Kitchen::Kitchen::getAvailableSpace() {
-    printf("Size: %hu & orders: %zu\n", this->_sizeList, this->_orders.size());
+    //printf("Size: %hu & orders: %zu\n", this->_sizeList, this->_orders.size());
     return (this->_sizeList - this->_orders.size());
 }
 
 void Kitchen::Kitchen::addCommand(std::shared_ptr<Pizza::pizza_t> &order) {
+    printf("Orders size: %zu & instance: %p\n", this->_orders.size(), &this->_orders);
     this->_orders.emplace_back(order);
 }
 

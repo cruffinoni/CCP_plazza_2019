@@ -13,6 +13,7 @@
 #include "Plazza/IPC.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Plazza/Mutex.hpp"
+#include "Plazza/ChildProcess.hpp"
 
 namespace Kitchen {
     class Kitchen;
@@ -42,9 +43,8 @@ namespace Reception {
             uint16_t _refreshStock;
             Plazza::Mutex _mutex;
 
-            //std::list<std::shared_ptr<Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>>>> _kitchenList;
             std::list<std::list<std::shared_ptr<Pizza::pizza_t>>> _orders;
-
+            Plazza::ChildProcessPool _childPool;
             Plazza::IPCPool<Reception *, Kitchen::Kitchen> _kitchenPool;
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };

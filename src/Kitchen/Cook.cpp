@@ -55,6 +55,7 @@ void Cook::Cook::cookPizza() {
         std::this_thread::sleep_for(std::chrono::seconds(Pizza::PizzaList[this->getCurrentPizza()->type].second));
         this->_ipc->getAscendant()->changePizzaStatus(this->_pizza, Pizza::Status::BAKED);
         this->setCookState(Cook::Cook::PENDING);
+        printf("Pizza %p cooked!\n", this->_pizza.get());
     }
 }
 
