@@ -67,8 +67,10 @@ void Kitchen::Kitchen::withdrawStock(std::list<Pizza::Ingredients> &list) {
 void Kitchen::Kitchen::changePizzaStatus(std::shared_ptr<Pizza::pizza_t> &pizza, Pizza::Status status) {
     Plazza::ScopedLock lock(this->_mutex, "changePizzaStatus");
     pizza->status = status;
-    if (status == Pizza::Status::BAKED)
+    if (status == Pizza::Status::BAKED) {
+        printf("Pizza baked processing...: %i & %p\n", pizza->status, pizza.get());
         this->_ipc->getAscendant()->checkCompletedOrders();
+    }
 }
 
 size_t Kitchen::Kitchen::getAvailableSpace() {

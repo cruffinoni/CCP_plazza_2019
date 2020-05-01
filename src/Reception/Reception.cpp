@@ -47,23 +47,21 @@ namespace Reception {
     }
 
     void Reception::checkCompletedOrders() {
-        uint16_t counter;
         Plazza::ScopedLock scopedLock(this->_mutex, "checkCompletedOrders");
-        for (auto order = _orders.begin(); order != _orders.end();) {
-            counter = 0;
-            for (auto &pizza : *order) {
-                if (pizza->status == Pizza::Status::BAKED)
-                    counter++;
-                else {
-                    counter = -1;
-                    break;
-                }
+        bool completed;
+
+        for (auto orders = _orders.begin(); orders != _orders.end(); ++orders) {
+            completed = true;
+            for (auto &pizza : *orders) {
+                printf("Pizza COMPLETED %p  & %i?\n", pizza.get(), pizza->status);
+                if (pizza->status != Pizza::Status::BAKED)
+                    completed = false;
             }
-            if (counter > 0) {
-                std::cout << "order finish : [pizzatype] = " << order->begin()->get()->type << " | [pizzasize] = " << order->begin()->get()->size << " * " << counter << std::endl;
-                order = _orders.erase(order);
-            } else
-                order++;
+            if (completed) {
+                std::cout << "order finish : [pizzatype] = " << orders->begin()->get()->type << " | [pizzasize] = " << orders->begin()->get()->size << std::endl;
+                this->_orders.erase(orders);
+                return;
+            }
         }
     }
 
@@ -73,7 +71,6 @@ namespace Reception {
         std::shared_ptr<Kitchen::Kitchen> kitchen;
         size_t space;
         Plazza::ScopedLock scopedLock(this->_mutex, "dispatchPizza");
-
         for (auto pizza = list.begin(); pizza != list.end(); ++pizza) {
             lessBusy = 0;
             for (auto &ipc: this->_kitchenPool) {
@@ -83,13 +80,12 @@ namespace Reception {
                     lessBusy = space;
                 }
             }
-            printf("Less busy: %zu & kitchen: %p\n", lessBusy, kitchen.get());
             if (lessBusy == 0) {
                 std::cerr << "No space found for the pizza, trying again..." << std::endl;
                 //this->addKitchen();
                 //--pizza;
             } else {
-                std::cout << "Adding pizza " << pizza->get()->type << std::endl;
+                std::cout << "Adding pizza " << pizza->get() << std::endl;
                 kitchen->addCommand(*pizza);
             }
         }
