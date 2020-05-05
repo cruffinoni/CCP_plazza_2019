@@ -48,11 +48,8 @@ namespace Plazza {
 
                 static const int MAX_TEXT_LENGTH = 0xFF;
                 typedef struct buff_s {
-                    buff_s() : mtype(1) {
-                        memset(this->mtext, 0, MAX_TEXT_LENGTH);
-                    }
-                    long mtype;
-                    char mtext[MAX_TEXT_LENGTH]{};
+                    long mtype = 1;
+                    char mtext[MAX_TEXT_LENGTH]{0};
                 } buff_t;
 
                 enum queue_e {
