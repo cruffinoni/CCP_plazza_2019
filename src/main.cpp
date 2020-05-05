@@ -58,8 +58,7 @@ int main(const int ac, const char **av)
     //     reception.addKitchen();
     //     reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     // }
-
-    Plazza::IPC::MessageQueue(10);
+    Plazza::IPC::MessageQueue a(10);
     std::this_thread::sleep_for(std::chrono::seconds(10));
 
     return (0);
