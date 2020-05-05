@@ -58,12 +58,7 @@ int main(const int ac, const char **av)
     //     reception.addKitchen();
     //     reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     // }
-<<<<<<< Updated upstream
-    Plazza::IPC::MessageQueue a(10);
-=======
-
     Plazza::IPC::MessageQueue test(10);
->>>>>>> Stashed changes
     std::this_thread::sleep_for(std::chrono::seconds(10));
 
     return (0);
