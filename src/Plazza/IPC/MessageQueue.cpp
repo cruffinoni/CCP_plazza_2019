@@ -10,13 +10,13 @@
 #include "MessageQueue.hpp"
 
 Plazza::IPC::MessageQueue::MessageQueue(const size_t id) {
-    generateQueue(_ascendant, "Reception", id);
-    generateQueue(_descendant, "Kitchen", id);
+    generateQueue(_list[0], "Reception", id);
+    generateQueue(_list[1], "Kitchen", id);
 }
 
 Plazza::IPC::MessageQueue::~MessageQueue() {
-    std::remove(_ascendant.first.c_str());
-    std::remove(_descendant.first.c_str());
+    std::remove(_list[0].first.c_str());
+    std::remove(_list[1].first.c_str());
 }
 
 void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string &&prefix, const size_t id) {
@@ -30,4 +30,16 @@ void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string 
     std::cout << queue.first << std::endl;
     std::ofstream fs(queue.first);
     queue.second = ftok(queue.first.c_str(), rd);
+}
+
+void Plazza::IPC::MessageQueue::sendMsg(std::string &msg, Destination dest) {
+    buff_t buff;
+    buff.text = msg.c_str();
+    buff.type = 0;
+    int msgid = msgget(_list[dest].second, IPC_CREAT);
+    msgsnd(msgid, &buff, sizeof(buff_t), 0);
+}
+
+std::string &Plazza::IPC::MessageQueue::receivMsg() {
+
 }

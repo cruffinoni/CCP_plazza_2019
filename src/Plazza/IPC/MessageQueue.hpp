@@ -15,6 +15,8 @@
 #include <cstring>
 #include <sys/types.h>
 #include <sys/ipc.h>
+#include <sys/msg.h>
+#include <array>
 
 namespace Plazza {
     namespace IPC {
@@ -44,10 +46,21 @@ namespace Plazza {
                 explicit MessageQueue(const size_t id);
                 ~MessageQueue();
 
+                typedef struct buff_s {
+                    long type;
+                    char text[100];
+                } buff_t;
+                enum Destination {
+                    RECEPTION,
+                    KITCHEN
+                };
+
+                void sendMsg(std::string &msg, Destination dest);
+                std::string &receivMsg();
+
             private:
                 typedef std::pair<std::string, key_t> queue_t;
-                queue_t _ascendant;
-                queue_t _descendant;
+                std::array<queue_t, 2> _list;
 
                 static void generateQueue(queue_t &queue, const std::string &&prefix, const size_t id);
         };
