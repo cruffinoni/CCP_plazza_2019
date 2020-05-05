@@ -59,7 +59,9 @@ int main(const int ac, const char **av)
     //     reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     // }
     Plazza::IPC::MessageQueue test(10);
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-
+    test.send("Hello world", Plazza::IPC::MessageQueue::ASCENDANT);
+    auto rtn = test.read(Plazza::IPC::MessageQueue::ASCENDANT);
+    //std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::cout << "READ: " << rtn << std::endl;
     return (0);
 }

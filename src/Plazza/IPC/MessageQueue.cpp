@@ -15,8 +15,8 @@ Plazza::IPC::MessageQueue::MessageQueue(const size_t id) {
 }
 
 Plazza::IPC::MessageQueue::~MessageQueue() {
-    std::remove(_list[0].first.c_str());
-    std::remove(_list[1].first.c_str());
+    for (auto &i: this->_list)
+        std::remove(i.first.c_str());
 }
 
 void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string &&prefix, const size_t id) {
@@ -32,14 +32,20 @@ void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string 
     queue.second = ftok(queue.first.c_str(), rd);
 }
 
-void Plazza::IPC::MessageQueue::sendMsg(std::string &msg, Destination dest) {
-    buff_t buff;
-    buff.text = msg.c_str();
-    buff.type = 0;
-    int msgid = msgget(_list[dest].second, IPC_CREAT);
-    msgsnd(msgid, &buff, sizeof(buff_t), 0);
+void Plazza::IPC::MessageQueue::send(const std::string &msg, const queue_e dest) {
+    buff_t buffer;
+
+    strcpy(buffer.mtext, msg.c_str());
+    int msgid = msgget(this->_list[dest].second, IPC_CREAT | 0660);
+    if (msgsnd(msgid, &buffer, MAX_TEXT_LENGTH, 0) == -1)
+        printf("Err: %s\n", strerror(errno));
 }
 
-std::string &Plazza::IPC::MessageQueue::receivMsg() {
+std::string Plazza::IPC::MessageQueue::read(const queue_e dest) {
+    int msgid = msgget(this->_list[dest].second, IPC_CREAT | 0660);
+    buff_t buffer;
 
+    if (msgrcv(msgid, &buffer, MAX_TEXT_LENGTH, 0, 0) == -1)
+        printf("Err: %s\n", strerror(errno));
+    return (std::string(buffer.mtext));
 }

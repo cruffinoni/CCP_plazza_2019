@@ -46,17 +46,22 @@ namespace Plazza {
                 explicit MessageQueue(const size_t id);
                 ~MessageQueue();
 
+                static const int MAX_TEXT_LENGTH = 0xFF;
                 typedef struct buff_s {
-                    long type;
-                    char text[100];
+                    buff_s() : mtype(1) {
+                        memset(this->mtext, 0, MAX_TEXT_LENGTH);
+                    }
+                    long mtype;
+                    char mtext[MAX_TEXT_LENGTH]{};
                 } buff_t;
-                enum Destination {
-                    RECEPTION,
-                    KITCHEN
+
+                enum queue_e {
+                    ASCENDANT,
+                    DESCENDANT
                 };
 
-                void sendMsg(std::string &msg, Destination dest);
-                std::string &receivMsg();
+                void send(const std::string &msg, const queue_e dest);
+                std::string read(const queue_e dest);
 
             private:
                 typedef std::pair<std::string, key_t> queue_t;
