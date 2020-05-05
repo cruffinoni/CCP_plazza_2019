@@ -5,11 +5,12 @@
 ** TODO: CHANGE DESCRIPTION.
 */
 
-#include "Plazza/IPC.hpp"
+#include "Plazza/IPC/Memory.hpp"
 #include "Kitchen/Kitchen.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
 #include "Reception/CommandeReceiver.hpp"
+#include "Plazza/IPC/FIFO.hpp"
 
 int main(const int ac, const char **av)
 {

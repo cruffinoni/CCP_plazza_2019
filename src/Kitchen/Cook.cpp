@@ -21,7 +21,7 @@ static void work(Cook::Cook *worker) {
     } while (worker->getCookState() != Cook::Cook::LEAVING);
 }
 
-Cook::Cook::Cook(const Kitchen::Kitchen::SharedKitchenIPC_t &ipc) :
+Cook::Cook::Cook(const Kitchen::Kitchen::SharedPtrKitchenIPC_t &ipc) :
     _state(PENDING), _ipc(ipc), _thread(work, this) {
 }
 

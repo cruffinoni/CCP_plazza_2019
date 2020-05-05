@@ -14,7 +14,7 @@
 #include <memory>
 #include <cstddef>
 #include <chrono>
-#include "Plazza/IPC.hpp"
+#include "Plazza/IPC/Memory.hpp"
 #include "Plazza/Mutex.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
@@ -41,10 +41,10 @@ namespace Kitchen {
 
     class Kitchen {
         public:
-            typedef Plazza::IPC<Kitchen *, std::shared_ptr<Cook::Cook>> KitchenIPC_t;
-            typedef std::shared_ptr<KitchenIPC_t> SharedKitchenIPC_t;
+            typedef Plazza::IPC::Memory<Kitchen *, std::shared_ptr<Cook::Cook>> KitchenIPC_t;
+            typedef std::shared_ptr<KitchenIPC_t> SharedPtrKitchenIPC_t;
 
-            Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc);
+            Kitchen(uint16_t cooks, Reception::Reception::SharedPtrReceptionIPC_t &ipc);
             ~Kitchen();
 
             std::chrono::time_point<std::chrono::system_clock> getTime() const;
@@ -59,8 +59,8 @@ namespace Kitchen {
         private:
             void checkForWork(std::shared_ptr<Cook::Cook> &worker);
 
-            Reception::Reception::SharedReceptionIPC_t _ipc;
-            Plazza::IPCPool<Kitchen *, Cook::Cook> _cookPool;
+            Reception::Reception::SharedPtrReceptionIPC_t _ipc;
+            Plazza::IPC::MemoryPool<Kitchen *, Cook::Cook> _cookPool;
             Plazza::Mutex _mutex;
             Stock _stock;
             uint16_t _sizeList;

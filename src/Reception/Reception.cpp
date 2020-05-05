@@ -15,9 +15,9 @@ namespace Reception {
     {}
 
     void Reception::addKitchen() {
-        this->_mutex.try_lock();
+        //this->_mutex.try_lock();
         this->_kitchenPool.emplace_back(this, this->_cooks);
-        this->_mutex.unlock();
+        //this->_mutex.unlock();
         try {
             if (this->_childPool.add() == 0) {
                 printf("(Child created) This: %p\n", this);
@@ -99,8 +99,4 @@ namespace Reception {
             }
         }
     }
-
-    //Reception::~Reception() {
-    //    this->_orders.clear();
-    //}
 }

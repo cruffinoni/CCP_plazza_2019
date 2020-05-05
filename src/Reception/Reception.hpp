@@ -10,7 +10,7 @@
 
 #include <list>
 #include <cstdint>
-#include "Plazza/IPC.hpp"
+#include "Plazza/IPC/Memory.hpp"
 #include "Pizza/Pizza.hpp"
 #include "Plazza/Mutex.hpp"
 #include "Plazza/ChildProcess.hpp"
@@ -22,8 +22,8 @@ namespace Kitchen {
 namespace Reception {
     class Reception {
         public:
-            typedef Plazza::IPC<Reception *, std::shared_ptr<Kitchen::Kitchen>> ReceptionIPC_t;
-            typedef std::shared_ptr<ReceptionIPC_t> SharedReceptionIPC_t;
+            typedef Plazza::IPC::Memory<Reception *, std::shared_ptr<Kitchen::Kitchen>> ReceptionIPC_t;
+            typedef std::shared_ptr<ReceptionIPC_t> SharedPtrReceptionIPC_t;
             Reception(uint16_t cooks, float multiplier, uint16_t refresh);
             ~Reception() = default;
 
@@ -45,7 +45,8 @@ namespace Reception {
 
             std::list<std::list<std::shared_ptr<Pizza::pizza_t>>> _orders;
             Plazza::ChildProcessPool _childPool;
-            Plazza::IPCPool<Reception *, Kitchen::Kitchen> _kitchenPool;
+            Plazza::IPC::MemoryPool<Reception *, Kitchen::Kitchen> _kitchenPool;
+            // MessageQueuePool
             static const int DEFAULT_KITCHEN_TIMEOUT = 5;
     };
 }

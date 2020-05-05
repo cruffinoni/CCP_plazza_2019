@@ -9,7 +9,7 @@
 #include "Pizza/Pizza.hpp"
 #include "Kitchen/Cook.hpp"
 
-Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::SharedReceptionIPC_t &ipc) : _ipc(ipc), _cookPool(cooks, this) {
+Kitchen::Kitchen::Kitchen(uint16_t cooks, Reception::Reception::SharedPtrReceptionIPC_t &ipc) : _ipc(ipc), _cookPool(cooks, this) {
     this->_sizeList = 2 * cooks;
 }
 

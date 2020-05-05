@@ -33,7 +33,7 @@ namespace Plazza {
 
     class ScopedLock {
         public:
-            explicit ScopedLock(Mutex &mutex, const std::string &location) : _mutex(mutex) {
+            explicit ScopedLock(Mutex &mutex, __attribute__ ((unused)) const std::string &location) : _mutex(mutex) {
                 this->_mutex.try_lock();
             }
 

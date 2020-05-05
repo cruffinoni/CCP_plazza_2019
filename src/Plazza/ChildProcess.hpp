@@ -56,7 +56,7 @@ namespace Plazza {
                     kill(*child, SIGKILL);
             }
             pid_t add() {
-                ChildProcess::ChildProcess child;
+                ChildProcess::ChildProcess child{};
                 pid_t pid = child.create();
                 if (pid != 0)
                     this->_pool.emplace_back(child);
