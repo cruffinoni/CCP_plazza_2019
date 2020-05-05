@@ -11,6 +11,7 @@
 #include "Reception/Reception.hpp"
 #include "Reception/CommandeReceiver.hpp"
 #include "Plazza/IPC/FIFO.hpp"
+#include "Plazza/IPC/MessageQueue.hpp"
 
 int main(const int ac, const char **av)
 {
@@ -26,7 +27,7 @@ int main(const int ac, const char **av)
     //Plazza::IPC<Cook, std::shared_ptr<Kitchen::Kitchen>> ipc(parent);
     //Kitchen::Kitchen kitchen(4, ipc);
     //ipc.setDescendant(kitchen);
-    printf("Core program -> %i\n", getpid());
+    //printf("Core program -> %i\n", getpid());
 
     //Reception::Reception recp(2, 4, 5);
     //// for (int i = 0; i < 1; ++i) {
@@ -52,11 +53,14 @@ int main(const int ac, const char **av)
     //
     //    }
     //}
-    Reception::Reception reception(2, 4, 5);
-    for (int i = 0; i < 1; ++i) {
-        reception.addKitchen();
-        reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
-    }
+    // Reception::Reception reception(2, 4, 5);
+    // for (int i = 0; i < 1; ++i) {
+    //     reception.addKitchen();
+    //     reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
+    // }
+
+    Plazza::IPC::MessageQueue(10);
     std::this_thread::sleep_for(std::chrono::seconds(10));
+
     return (0);
 }
