@@ -48,14 +48,14 @@ namespace Pizza {
         BAKED
     };
 
-    static std::list<std::string> SizeName = {
+    const static std::list<std::string> SizeName = {
         "S",
         "M",
         "L",
         "XL",
         "XXL"
     };
-    static std::list<std::string> PizzaName = {
+    const static std::list<std::string> PizzaName = {
         "regina",
         "margarita",
         "americana",

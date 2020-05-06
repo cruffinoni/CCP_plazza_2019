@@ -10,7 +10,6 @@
 #include "Pizza/Pizza.hpp"
 #include "Reception/Reception.hpp"
 #include "Reception/CommandeReceiver.hpp"
-#include "Plazza/IPC/FIFO.hpp"
 #include "Plazza/IPC/MessageQueue.hpp"
 
 int main(const int ac, const char **av)
@@ -58,10 +57,15 @@ int main(const int ac, const char **av)
     //     reception.addKitchen();
     //     reception.addOrder(Pizza::pizza_t(Pizza::Regina, Pizza::S), 3);
     // }
-    Plazza::IPC::MessageQueue test(10);
-    test.send("Hello world", Plazza::IPC::MessageQueue::ASCENDANT);
-    auto rtn = test.read(Plazza::IPC::MessageQueue::ASCENDANT);
+    Plazza::IPC::MessageQueue::Queue test(10);
+    test.send("Hello world", Plazza::IPC::MessageQueue::Queue::ASCENDANT);
+    //auto rtn = test.read(Plazza::IPC::MessageQueue::ASCENDANT);
     //std::this_thread::sleep_for(std::chrono::seconds(10));
-    std::cout << "READ: " << rtn << std::endl;
+    try {
+        std::cout << "READ: " << test.read(Plazza::IPC::MessageQueue::Queue::ASCENDANT) << std::endl;
+        std::cout << "READ 2: " << test.read(Plazza::IPC::MessageQueue::Queue::ASCENDANT) << std::endl;
+    } catch (const Plazza::IPC::Exceptions::NoMessageLeft &e) {
+        std::cout << e.what() << std::endl;
+    }
     return (0);
 }

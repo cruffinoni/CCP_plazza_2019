@@ -9,17 +9,17 @@
 #include <chrono>
 #include "MessageQueue.hpp"
 
-Plazza::IPC::MessageQueue::MessageQueue(const size_t id) {
+Plazza::IPC::MessageQueue::Queue::Queue(const size_t id) {
     generateQueue(_list[0], "Reception", id);
     generateQueue(_list[1], "Kitchen", id);
 }
 
-Plazza::IPC::MessageQueue::~MessageQueue() {
+Plazza::IPC::MessageQueue::Queue::~Queue() {
     for (auto &i: this->_list)
         std::remove(i.first.c_str());
 }
 
-void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string &&prefix, const size_t id) {
+void Plazza::IPC::MessageQueue::Queue::generateQueue(queue_t &queue, const std::string &&prefix, const size_t id) {
     std::mt19937 rand(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     std::uniform_int_distribution<int> range(1,1000);
     int rd = range(rand);
@@ -32,20 +32,25 @@ void Plazza::IPC::MessageQueue::generateQueue(queue_t &queue, const std::string 
     queue.second = ftok(queue.first.c_str(), rd);
 }
 
-void Plazza::IPC::MessageQueue::send(const std::string &msg, const queue_e dest) {
+void Plazza::IPC::MessageQueue::Queue::send(const std::string &msg, const queue_e type) {
     buff_t buffer;
 
     strcpy(buffer.mtext, msg.c_str());
-    int msgid = msgget(this->_list[dest].second, IPC_CREAT | 0660);
+    int msgid = msgget(this->_list[type].second, IPC_CREAT | 0660);
     if (msgsnd(msgid, &buffer, MAX_TEXT_LENGTH, 0) == -1)
-        printf("Err: %s\n", strerror(errno));
+        throw Exceptions::QueueError("msgsnd");
 }
 
-std::string Plazza::IPC::MessageQueue::read(const queue_e dest) {
-    int msgid = msgget(this->_list[dest].second, IPC_CREAT | 0660);
+std::string Plazza::IPC::MessageQueue::Queue::read(const queue_e type) {
+    int msgid = msgget(this->_list[type].second, IPC_CREAT | 0660);
     buff_t buffer;
 
-    if (msgrcv(msgid, &buffer, MAX_TEXT_LENGTH, 0, 0) == -1)
-        printf("Err: %s\n", strerror(errno));
+    if (msgrcv(msgid, &buffer, MAX_TEXT_LENGTH, 0, IPC_NOWAIT) == -1) {
+        if (errno == ENOMSG) {
+            errno = 0;
+            throw Exceptions::NoMessageLeft();
+        } else
+            throw Exceptions::QueueError("msgrcv");
+    }
     return (std::string(buffer.mtext));
 }
